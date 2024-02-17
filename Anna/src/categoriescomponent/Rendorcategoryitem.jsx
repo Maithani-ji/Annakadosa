@@ -20,7 +20,7 @@ const RenderCategoryItem = ({item, navigation}) => {
       const apiUrl = 'https://techiedom.com/annakadosa/api/store/cart/'; // Replace with your actual API endpoint
       console.log(item.id);
       const response = await axios.post(apiUrl, {
-        user_id: 211,
+        user_id: userId,
         product_id: item.id,
         qty: 1,
       });

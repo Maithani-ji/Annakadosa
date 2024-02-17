@@ -7,13 +7,14 @@ import {getData} from '../utils/AsyncStorag';
 const ProductItem = ({item, navigation, index, load, setLoad}) => {
   const onAddPress = async productId => {
     setLoad(true);
-    const id = getData('id');
+    const id = await getData('id');
+    console.log('best seller uid', id);
     try {
       const apiUrl = 'https://techiedom.com/annakadosa/api/store/cart/'; // Replace with your actual API endpoint
-      const userId = id;
+      // const userId = id;
 
       const response = await axios.post(apiUrl, {
-        user_id: userId,
+        user_id: id,
         product_id: item.id,
         qty: 1,
       });
@@ -21,6 +22,7 @@ const ProductItem = ({item, navigation, index, load, setLoad}) => {
       // If the request is successful, navigate or perform other actions
       if (response && response.data) {
         setLoad(false);
+        Alert.alert('Success', 'Added to cart');
         navigation.navigate('Productinfo', {item: item});
 
         // You can navigate or perform any other action here

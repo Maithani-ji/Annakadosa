@@ -31,11 +31,12 @@ const Cart = ({navigation}) => {
     setempty(false);
     const id = await getData('id');
     setuid(id);
+    console.log('uid', uid);
     try {
       setLoad(true);
       const apiUrl = 'https://techiedom.com/annakadosa/api/cart/';
 
-      const response = await axios.post(apiUrl, id);
+      const response = await axios.post(apiUrl, {id: id});
       console.log('cart response', response.data);
       if (response.data.data.length === 0) {
         setLoad(false);

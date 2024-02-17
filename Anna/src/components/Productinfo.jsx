@@ -63,6 +63,7 @@ const Productinfo = ({navigation, route}) => {
       setLoad(true);
       const apiUrl = 'https://techiedom.com/annakadosa/api/update/cart/';
       const id = await getData('id');
+      console.log('prod info id', id);
       const body = {
         user_id: id,
         product_id: item.id,

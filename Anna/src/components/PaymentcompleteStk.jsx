@@ -71,7 +71,7 @@ const Paymentcomplete = ({navigation, route}) => {
             ₹{details.total}
           </Text>
           <TouchableOpacity
-            onPress={() => navigation.replace('Home')}
+            onPress={() => navigation.replace('Main')}
             style={{
               backgroundColor: 'green',
               paddingHorizontal: 32,

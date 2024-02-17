@@ -15,6 +15,7 @@ import axios from 'axios';
 import Loading from '../../loadingcomponent/loading';
 import {getData, storeData} from '../../utils/AsyncStorag';
 import {useLogin} from '../../utils/LoginproviderContext';
+import Snackbar from 'react-native-snackbar';
 
 const SignIn = ({navigation}) => {
   const [number, setnumber] = useState('');
@@ -41,7 +42,13 @@ const SignIn = ({navigation}) => {
         setload(false);
       } else {
         setload(false);
-        Alert.alert('Please enter a valid 10-digit phone number');
+        Snackbar.show({
+          text: 'Please enter valid 10 digit number.',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
       }
     } catch (error) {
       setload(false);

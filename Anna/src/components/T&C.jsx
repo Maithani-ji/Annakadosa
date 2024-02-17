@@ -7,9 +7,42 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import Loading from '../loadingcomponent/loading';
+import axios from 'axios';
 
 const Terms = ({navigation}) => {
+  const [load, setLoad] = useState(false);
+  const [details, setDetails] = useState('');
+  useEffect(() => {
+    fetchDetails();
+  }, []);
+
+  const fetchDetails = async () => {
+    setLoad(true);
+    try {
+      const response = await axios.get(
+        'https://techiedom.com/annakadosa/api/terms/condition',
+      );
+
+      // Assuming the API returns a JSON object
+      const data = response.data.data;
+
+      // Do something with the fetched details
+      console.log('Fetched Details:', data);
+      setDetails(data.privacy_policy);
+      // You can return the fetched details or process them further
+    } catch (error) {
+      // Handle errors here
+      console.error('Error fetching details in about us :', error.message);
+      throw error; // Rethrow the error or handle it as needed
+    } finally {
+      setLoad(false);
+    }
+  };
+  if (load) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -37,6 +70,17 @@ const Terms = ({navigation}) => {
       </View>
       <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
         <View>
+          <Text
+            style={{
+              fontSize: 16,
+              color: 'gray',
+
+              marginBottom: 20,
+            }}>
+            {details}
+          </Text>
+        </View>
+        {/* <View>
           <Text
             style={{
               fontSize: 14,
@@ -309,7 +353,7 @@ const Terms = ({navigation}) => {
               blandit.
             </Text>
           </View>
-        </View>
+        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

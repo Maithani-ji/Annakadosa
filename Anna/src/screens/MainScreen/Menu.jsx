@@ -305,6 +305,10 @@ const Menu = ({navigation}) => {
             dotColor="#00a954"
             autoplay={true}
             imageLoadingColor={'#00a954'}
+            onCurrentImagePressed={index => {
+              // console.warn(`image ${index} pressed`)
+              navigation.navigate('Searchmenu', {id: apiImages[index].link_id});
+            }}
             autoplayInterval={2000}
             dotStyle={{
               width: 9,
@@ -315,9 +319,7 @@ const Menu = ({navigation}) => {
               margin: 0,
               backgroundColor: 'rgba(128, 128, 128, 0.92)',
             }}
-            //circleLoop={true}
             resizeMode={'cover'}
-            // resizeMethod={'resize'}
             ImageComponentStyle={{
               borderRadius: 10,
               width: '100%',

@@ -10,7 +10,7 @@ import React, {useState} from 'react';
 import Loading from '../loadingcomponent/loading';
 import axios from 'axios';
 import {getData} from '../utils/AsyncStorag';
-
+import Snackbar from 'react-native-snackbar';
 const RenderCategoryItem = ({item, navigation}) => {
   const [load, setLoad] = useState(false);
   const onAddPress = async productId => {
@@ -29,19 +29,39 @@ const RenderCategoryItem = ({item, navigation}) => {
       // If the request is successful, navigate or perform other actions
       if (response && response.data) {
         setLoad(false);
-        Alert.alert('Success', 'Added to cart');
+        Snackbar.show({
+          text: 'Added to Cart Successfully',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
         navigation.navigate('Productinfo', {item: item});
 
         // You can navigate or perform any other action here
       } else {
         setLoad(false);
-        Alert.alert('Error', 'Error in adding product to cart');
+        Snackbar.show({
+          text: 'Failed in adding product to cart ',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
         console.error('Failed to add product to cart.');
       }
     } catch (error) {
       setLoad(false);
-      Alert.alert('Error', 'Error in adding product to cart');
+      Snackbar.show({
+        text: 'Failed in adding product to cart ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       console.error('Error adding product to cart:', error);
+    } finally {
+      setLoad(false);
     }
   };
 
@@ -94,7 +114,7 @@ const RenderCategoryItem = ({item, navigation}) => {
             color: 'red',
             marginBottom: 5,
           }}>
-          {item.price}
+          ₹{item.price}
         </Text>
         <Text numberOfLines={3} style={{marginBottom: 20}}>
           {item.short_description}

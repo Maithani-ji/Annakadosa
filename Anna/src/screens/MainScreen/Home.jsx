@@ -27,14 +27,7 @@ const Home = ({navigation}) => {
   const [recomended, setRecommended] = useState([]);
   const [searchtext, setSearchtext] = useState('');
   const [searchdata, setSearchdata] = useState([]);
-  // useFocusEffect(
-  //   React.useCallback(() => {
-  //     fetchImagesFromApi();
-  //     fetchData();
-  //     fetchBestseller();
-  //     fetchrecommended();
-  //   }, []),
-  // );
+
   useEffect(() => {
     fetchImagesFromApi();
     fetchData();
@@ -174,31 +167,50 @@ const Home = ({navigation}) => {
           <Image
             source={require('../../assets/iconsassets/menu.png')}
             style={{
-              width: 23,
-              height: 23,
+              width: 26,
+              height: 26,
               marginTop: 7,
             }}
           />
         </TouchableOpacity>
-        <Text
+        <View
           style={{
+            flexDirection: 'row',
             flex: 1,
-            fontSize: 25,
-            fontWeight: 'bold',
-            color: 'green',
+            gap: -10,
             marginLeft: 10,
-            textAlignVertical: 'center',
+            marginBottom: -10,
           }}>
-          Anna Ka Dosa
-        </Text>
+          <Image
+            source={require('../../assets/iconsassets/Annad.png')}
+            style={{
+              width: 35,
+              height: 35,
+              marginTop: 5,
+            }}
+          />
+          <Text
+            style={{
+              flex: 1,
+              fontSize: 25,
+              fontWeight: 'bold',
+              color: 'green',
+              marginLeft: 10,
+              textAlignVertical: 'center',
+              marginTop: -7,
+            }}>
+            Anna Ka Dosa
+          </Text>
+        </View>
+
         <TouchableOpacity
           style={{margin: 3, borderRadius: 50, overflow: 'hidden'}}
           onPress={() => navigation.navigate('Profile')}>
           <Image
             source={require('../../assets/iconsassets/user-photo.png')}
             style={{
-              width: 28,
-              height: 28,
+              width: 30,
+              height: 30,
             }}
             resizeMode="cover"
           />
@@ -255,6 +267,12 @@ const Home = ({navigation}) => {
                 autoplay={true}
                 imageLoadingColor={'#00a954'}
                 autoplayInterval={2000}
+                onCurrentImagePressed={index => {
+                  // console.warn(`image ${index} pressed`)
+                  navigation.navigate('Searchmenu', {
+                    id: apiImages[index].link_id,
+                  });
+                }}
                 dotStyle={{
                   width: 9,
                   height: 9,

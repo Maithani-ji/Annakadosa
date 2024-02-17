@@ -17,6 +17,7 @@ import axios from 'axios';
 import Loading from '../../loadingcomponent/loading';
 import {getData, storeData} from '../../utils/AsyncStorag';
 import {useLogin} from '../../utils/LoginproviderContext';
+import Snackbar from 'react-native-snackbar';
 const Signup = ({navigation}) => {
   const [selectedId, setSelectedId] = useState();
   const [selectedGender, setSelectedGender] = useState('');
@@ -89,13 +90,27 @@ const Signup = ({navigation}) => {
         console.log('API response id:', response.data.data.id);
         await storeData('id', response.data.data.id);
         setLoad(false);
-        Alert.alert('Registered Successfully.');
+        Snackbar.show({
+          text: 'Registered Successfully.',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+
         if (response.data.data.id) {
           setIsLoggedin(true);
         }
       } else {
         setLoad(false);
-        Alert.alert('Please fill in all the required fields');
+        Snackbar.show({
+          text: 'Please fill in all the fields',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        // navigation.replace('Address');
       }
     } catch (error) {
       setLoad(false);

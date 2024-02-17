@@ -13,6 +13,7 @@ import RadioGroup from 'react-native-radio-buttons-group';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
+import Snackbar from 'react-native-snackbar';
 
 const Addaddress = ({navigation, route}) => {
   const {editable, editaddress} = route?.params;
@@ -54,36 +55,25 @@ const Addaddress = ({navigation, route}) => {
       );
       setload(false);
       console.log('address', response.data);
-      Alert.alert(
-        'Success',
-        'Address added successfully',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Handle OK button press
-              navigation.replace('ManageAddress');
-            },
-          },
-        ],
-        {cancelable: false},
-      );
+
+      Snackbar.show({
+        text: 'Address added  Successfully',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      navigation.replace('Address');
     } catch (error) {
       setload(false);
-      Alert.alert(
-        'Error',
-        'Error in adding New Address',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.replace('ManageAddress');
-            },
-          },
-        ],
-        {cancelable: false},
-      );
-
+      Snackbar.show({
+        text: 'Error in adding Address',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      navigation.replace('Address');
       console.error('Error adding address:', error);
     }
   };
@@ -106,36 +96,24 @@ const Addaddress = ({navigation, route}) => {
       );
       setload(false);
       console.log('address', response.data);
-      Alert.alert(
-        'Success',
-        'Address Edited successfully',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Handle OK button press
-              navigation.replace('ManageAddress');
-            },
-          },
-        ],
-        {cancelable: false},
-      );
+      Snackbar.show({
+        text: 'Address Edited Successfully',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      navigation.replace('Address');
     } catch (error) {
       setload(false);
-      Alert.alert(
-        'Error',
-        'Error in Editing New Address',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.replace('ManageAddress');
-            },
-          },
-        ],
-        {cancelable: false},
-      );
-
+      Snackbar.show({
+        text: 'Error in editing Address',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      navigation.replace('Address');
       console.error('Error editing address:', error);
     }
   };
@@ -149,23 +127,16 @@ const Addaddress = ({navigation, route}) => {
         },
       );
       setload(false);
-      Alert.alert(
-        'Success',
-        'Address Deleted successfully',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              // Handle OK button press
-              navigation.replace('ManageAddress');
-            },
-          },
-        ],
-        {cancelable: false},
-      );
+      Snackbar.show({
+        text: 'Address Deleted Successfully',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       // Handle the response as needed
       console.log('Delete address response:', response.data);
-
+      navigation.replace('Main');
       // Additional logic after successful deletion
     } catch (error) {
       setload(false);

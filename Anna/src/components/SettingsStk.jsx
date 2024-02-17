@@ -426,7 +426,7 @@ const Settings = ({navigation}) => {
             </TouchableOpacity>
           </TouchableOpacity>
         </View>
-        <View
+        {/* <View
           style={{
             //    marginVertical: 10,
 
@@ -479,7 +479,7 @@ const Settings = ({navigation}) => {
               />
             </TouchableOpacity>
           </TouchableOpacity>
-        </View>
+        </View> */}
         <View
           style={{
             marginVertical: 20,

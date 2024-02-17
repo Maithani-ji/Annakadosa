@@ -16,6 +16,7 @@ import axios from 'axios';
 import CartItem from '../../categoriescomponent/Cartitems';
 import {getData} from '../../utils/AsyncStorag';
 import {useFocusEffect} from '@react-navigation/native';
+import Snackbar from 'react-native-snackbar';
 
 const Cart = ({navigation}) => {
   const [load, setLoad] = useState(false);
@@ -31,7 +32,7 @@ const Cart = ({navigation}) => {
     setempty(false);
     const id = await getData('id');
     setuid(id);
-    console.log('uid', uid);
+    console.log('uid', id);
     try {
       setLoad(true);
       const apiUrl = 'https://techiedom.com/annakadosa/api/cart/';
@@ -41,6 +42,7 @@ const Cart = ({navigation}) => {
       if (response.data.data.length === 0) {
         setLoad(false);
         setempty(true); // Handle the case where data is not present or there's an error
+        return;
       }
 
       setLoad(false);
@@ -48,11 +50,19 @@ const Cart = ({navigation}) => {
       setCartData(response.data.data.cart);
     } catch (error) {
       setLoad(false);
+      Snackbar.show({
+        text: 'Failed To Load Cart ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       //Alert.alert('Error', 'Failed in getting the cart details.');
       setempty(true);
       console.error('Error fetching data:', error);
     }
   };
+  // console.log('uid', uid);
   const updateQuantity = async (product_id, qty) => {
     try {
       const id = await getData('id');
@@ -66,12 +76,24 @@ const Cart = ({navigation}) => {
 
       const response = await axios.post(apiUrl, body);
       //console.log(body);
-
-      Alert.alert('Success', 'Successfully cart updated');
+      Snackbar.show({
+        text: 'Cart Updated Successfully',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      //Alert.alert('Success', 'Successfully cart updated');
       console.log('Quantity updated successfully!', response.data);
       fetchData();
     } catch (error) {
-      Alert.alert('Failed', 'Failed to update the cart.');
+      Snackbar.show({
+        text: 'Failed To Update Cart ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       console.error('Error updating quantity:', error);
     }
   };

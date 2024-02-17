@@ -13,6 +13,7 @@ import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {useFocusEffect} from '@react-navigation/native';
 import {getData, storeData} from '../utils/AsyncStorag';
+import Snackbar from 'react-native-snackbar';
 
 const Address = ({navigation}) => {
   useFocusEffect(
@@ -39,7 +40,13 @@ const Address = ({navigation}) => {
 
       // Check if response data array is empty
       if (response.data.data.length === 0) {
-        Alert.alert('Please add your address!!');
+        Snackbar.show({
+          text: 'Please add your address !!',
+          textColor: 'black',
+          backgroundColor: 'gray',
+          duration: Snackbar.LENGTH_LONG,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
         //console.error('API error:', response.data.message);
         setload(false);
         return; // Exit the function if the array is empty

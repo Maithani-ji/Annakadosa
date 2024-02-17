@@ -12,11 +12,13 @@ import BouncyCheckbox from 'react-native-bouncy-checkbox';
 import axios from 'axios';
 import {getData} from '../utils/AsyncStorag';
 import {useFocusEffect} from '@react-navigation/native';
+import Loading from '../loadingcomponent/loading';
 
 const Securecheckout = ({navigation, route}) => {
   const [select, setselect] = useState(false);
   const {details} = route.params;
   const [defaultaddress, setdefaultaddress] = useState('');
+  const [load, setLoad] = useState(false);
   console.log('details', details);
 
   useFocusEffect(
@@ -29,7 +31,7 @@ const Securecheckout = ({navigation, route}) => {
     setdefaultaddress(defaultadd);
   };
   const onPressPayment = async () => {
-    //
+    setLoad(true);
     try {
       const id = await getData('id');
       const response2 = await axios.post(
@@ -40,7 +42,7 @@ const Securecheckout = ({navigation, route}) => {
 
       const response1 = await axios.post(
         'https://techiedom.com/annakadosa/api/destroy/cart/',
-        {id: id},
+        {user_id: id},
       );
       console.log('Response 1:', response1.data);
       // Handle the responses or perform additional actions as needed
@@ -48,8 +50,13 @@ const Securecheckout = ({navigation, route}) => {
     } catch (error) {
       console.error('Error:', error);
       // Handle errors appropriately
+    } finally {
+      setLoad(false);
     }
   };
+  if (load) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View

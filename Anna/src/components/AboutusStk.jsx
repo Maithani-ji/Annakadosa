@@ -1,5 +1,6 @@
 import {
   Image,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -225,6 +226,7 @@ const Aboutus = ({navigation}) => {
             gap: 10,
           }}>
           <TouchableOpacity
+            onPress={() => Linking.openURL('https://www.facebook.com')}
             style={{
               marginTop: 20,
               // elevation: 5, // Add elevation for Android shadow
@@ -267,6 +269,7 @@ const Aboutus = ({navigation}) => {
             </View>
           </TouchableOpacity>
           <TouchableOpacity
+            onPress={() => Linking.openURL('https://www.instagram.com')}
             style={{
               marginTop: 20,
               // elevation: 5, // Add elevation for Android shadow

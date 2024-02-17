@@ -13,7 +13,7 @@ import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
-
+import Snackbar from 'react-native-snackbar';
 const Productinfo = ({navigation, route}) => {
   const {item} = route.params;
   const [load, setLoad] = useState(false);
@@ -26,7 +26,7 @@ const Productinfo = ({navigation, route}) => {
   //const [disable, setdisable] = useState(true);
   const [select, setselect] = useState(true);
 
-  const [showFullDescription, setShowFullDescription] = useState(false);
+  const [showFullDescription, setShowFullDescription] = useState(true);
   if (item.averageRating < 1) {
     item.averageRating = 1;
   } else {
@@ -75,16 +75,35 @@ const Productinfo = ({navigation, route}) => {
       if (response && response.data) {
         setQuantity(newQuantity);
         setLoad(false);
-        Alert.alert('Success', 'Successfully cart updated');
+        Snackbar.show({
+          text: 'Cart Updated Successfully',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        //Alert.alert('Success', 'Successfully cart updated');
         console.log('Quantity updated successfully!');
       } else {
         setLoad(false);
-        Alert.alert('Failed', 'Failed to update the cart.');
+        Snackbar.show({
+          text: 'Failed To Update Cart ',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
         console.error('Failed to update quantity.');
       }
     } catch (error) {
       setLoad(false);
-      Alert.alert('Failed', 'Failed to update the cart.');
+      Snackbar.show({
+        text: 'Failed To Update Cart ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 10, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       console.error('Error updating quantity:', error);
     }
   };
@@ -127,15 +146,6 @@ const Productinfo = ({navigation, route}) => {
           }}>
           {item.name}
         </Text>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('Searchmenu')}>
-          <Image
-            source={require('../assets/iconsassets/Search.png')}
-            style={{
-              width: 35,
-              height: 35,
-            }}
-          />
-        </TouchableOpacity> */}
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{marginBottom: 20}}>
@@ -143,7 +153,7 @@ const Productinfo = ({navigation, route}) => {
             source={{uri: item.thumb_image}}
             style={{
               width: '100%',
-              height: 250,
+              height: 350,
             }}
             resizeMode="cover"
           />

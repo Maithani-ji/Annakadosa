@@ -15,7 +15,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
-
+import Snackbar from 'react-native-snackbar';
 const Profile = ({navigation}) => {
   useEffect(() => {
     const fetchData = async () => {
@@ -51,7 +51,13 @@ const Profile = ({navigation}) => {
       } catch (error) {
         setLoad(false);
         console.error('API error:', error);
-        Alert.alert('Error in fetching your information');
+        Snackbar.show({
+          text: 'Failed in fetching information ',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
       }
     };
 
@@ -125,7 +131,13 @@ const Profile = ({navigation}) => {
         // console.log('API response:', response.data);
 
         setLoad(false);
-        Alert.alert('Success', 'Edited Successfully.');
+        Snackbar.show({
+          text: 'Profile edited Successfully',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
 
         navigation.navigate('Main');
       } else {
@@ -134,7 +146,13 @@ const Profile = ({navigation}) => {
       }
     } catch (error) {
       setLoad(false);
-      Alert.alert('Error', 'Failed to Edit. Please try again.');
+      Snackbar.show({
+        text: 'Failed to edit profile !',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
       console.error('API error:', error);
     }
   };
@@ -180,7 +198,7 @@ const Profile = ({navigation}) => {
             onChange={onchange}
           />
         )}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={{marginLeft: -10, marginBottom: 5, flexDirection: 'row'}}>
           <Image
             source={require('../assets/iconsassets/user-photo.png')}
@@ -192,7 +210,7 @@ const Profile = ({navigation}) => {
             source={require('../assets/iconsassets/edit.png')}
             style={{height: 20, width: 20, tintColor: 'black'}}
           />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <Text
           style={{
             fontSize: 25,

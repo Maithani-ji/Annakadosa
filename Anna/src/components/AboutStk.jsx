@@ -7,9 +7,42 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import Loading from '../loadingcomponent/loading';
 
 const About = ({navigation}) => {
+  const [load, setLoad] = useState(false);
+  const [details, setDetails] = useState('');
+  useEffect(() => {
+    fetchDetails();
+  }, []);
+
+  const fetchDetails = async () => {
+    setLoad(true);
+    try {
+      const response = await axios.get(
+        'https://techiedom.com/annakadosa/api/about/us',
+      );
+
+      // Assuming the API returns a JSON object
+      const data = response.data.data;
+
+      // Do something with the fetched details
+      console.log('Fetched Details:', data);
+      setDetails(data.about_us);
+      // You can return the fetched details or process them further
+    } catch (error) {
+      // Handle errors here
+      console.error('Error fetching details in about us :', error.message);
+      throw error; // Rethrow the error or handle it as needed
+    } finally {
+      setLoad(false);
+    }
+  };
+  if (load) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -51,29 +84,12 @@ const About = ({navigation}) => {
         <View>
           <Text
             style={{
-              fontSize: 16,
+              fontSize: 17,
               color: 'gray',
 
               marginBottom: 20,
             }}>
-            At Anna Ka Dosa, we invite you to embark on a gastronomic adventure
-            through the vibrant and diverse flavors of South Indian cuisine.
-            Nestled in the heart of Delhi, our restaurant is more than just a
-            dining destination; it's a celebration of tradition, culture, and
-            the rich tapestry of culinary heritage that defines South India.
-          </Text>
-          <Text
-            style={{
-              fontSize: 16,
-              color: 'gray',
-
-              marginBottom: 20,
-            }}>
-            Our menu is a curated selection of South Indian culinary treasures,
-            ranging from crispy dosas that melt in your mouth to aromatic
-            biryanis that transport you to the bustling streets of Chennai. Each
-            dish is a masterpiece, prepared with love and precision, using the
-            finest ingredients that capture the essence of South Indian spices.
+            {details}
           </Text>
         </View>
       </ScrollView>

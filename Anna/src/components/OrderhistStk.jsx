@@ -13,6 +13,7 @@ import Loading from '../loadingcomponent/loading';
 import axios from 'axios';
 import {useFocusEffect} from '@react-navigation/native';
 import {getData} from '../utils/AsyncStorag';
+import Snackbar from 'react-native-snackbar';
 
 const Orderhistory = ({navigation}) => {
   const [historyData, setHistoryData] = useState();
@@ -34,27 +35,34 @@ const Orderhistory = ({navigation}) => {
 
       if (response?.data?.data[0]?.length === 0) {
         setLoad(false);
-        Alert.alert(
-          'No Orders',
-          'Please order something !!',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Handle OK button press
-                navigation.replace('Main');
-              },
+        Snackbar.show({
+          text: 'No Orders,Please order something !!',
+          duration: Snackbar.LENGTH_INDEFINITE,
+          textColor: 'white',
+          backgroundColor: 'gray',
+          marginBottom: 70,
+          action: {
+            text: 'Press',
+            textColor: 'black',
+            onPress: () => {
+              navigation.replace('Main');
             },
-          ],
-          {cancelable: false},
-        );
+          },
+        });
+
         return;
       }
 
       setHistoryData(response.data.data);
     } catch (error) {
       console.error('Error fetching order history:', error);
-      Alert.alert('Error', 'Failed to fetch order history');
+      Snackbar.show({
+        text: 'Failed to fetch order history!! ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
     } finally {
       setLoad(false);
     }
@@ -72,24 +80,23 @@ const Orderhistory = ({navigation}) => {
         body,
       );
       if (response.data.status_code === '200') {
-        Alert.alert(
-          'Success',
-          'Order cancelled successfully',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                // Handle OK button press
-                navigation.replace('Main');
-              },
-            },
-          ],
-          {cancelable: false},
-        );
+        Snackbar.show({
+          text: 'Product Cancelled Successfully!! ',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
       }
     } catch (error) {
       console.error('Error fetching order history:', error);
-      Alert.alert('Error', 'Failed to fetch order history');
+      Snackbar.show({
+        text: 'Failed to fetch orders!! ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
     } finally {
       setLoad(false);
     }

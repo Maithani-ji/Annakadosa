@@ -13,6 +13,7 @@ import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Loading from '../../loadingcomponent/loading';
 import {getData} from '../../utils/AsyncStorag';
+import Snackbar from 'react-native-snackbar';
 
 const Verify = ({navigation, route}) => {
   const {data} = route.params;
@@ -58,7 +59,14 @@ const Verify = ({navigation, route}) => {
           requestBody,
         );
         if (response.data.status === 'danger') {
-          Alert.alert('Wrong Pin', 'Please Enter correct OTP');
+          Snackbar.show({
+            text: 'Wrong Pin ,Enter correct Otp.',
+            textColor: 'white',
+            backgroundColor: 'red',
+            duration: Snackbar.LENGTH_SHORT,
+            marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+          });
+
           console.log('response', response.data);
           setload(false);
           return;
@@ -69,7 +77,14 @@ const Verify = ({navigation, route}) => {
         }
       } else {
         setload(false);
-        Alert.alert('Please enter a 4-digit pin');
+        Snackbar.show({
+          text: 'Please enter a 4 digit pin.',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        //navigation.replace('Address');
       }
     } catch (error) {
       setload(false);

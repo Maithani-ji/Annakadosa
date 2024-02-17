@@ -15,28 +15,47 @@ import Loading from '../../loadingcomponent/loading';
 
 const Offeritem = ({navigation}) => {
   const [products, setProducts] = useState([]);
+  const [banner, setBanner] = useState();
   const [load, setLoad] = useState(false);
   useEffect(() => {
-    const fetchData = async () => {
-      setLoad(true);
-      try {
-        //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
-
-        const response = await axios.get(
-          'https://techiedom.com/annakadosa/api/offer/product',
-        );
-        //console.log(response.data.data);
-        setProducts(response.data.data);
-        setLoad(false);
-      } catch (error) {
-        setLoad(false);
-        console.error('Error fetching data:', error);
-        // setError('An error occurred while fetching data.');
-      }
-    };
-
     fetchData();
+    fetchBanner();
   }, []);
+  const fetchData = async () => {
+    setLoad(true);
+    try {
+      //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
+
+      const response = await axios.get(
+        'https://techiedom.com/annakadosa/api/offer/product',
+      );
+      //console.log(response.data.data);
+      setProducts(response.data.data);
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      console.error('Error fetching data:', error);
+      // setError('An error occurred while fetching data.');
+    }
+  };
+  const fetchBanner = async () => {
+    setLoad(true);
+    try {
+      //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
+
+      const response = await axios.post(
+        'https://techiedom.com/annakadosa/api/offer/product',
+        {category_id: 1},
+      );
+      console.log(response.data.data[0].thumb_image);
+      setBanner(response.data.data[0]);
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      console.error('Error fetching data:', error);
+      // setError('An error occurred while fetching data.');
+    }
+  };
   if (load) {
     return <Loading color={'white'} />;
   }
@@ -99,6 +118,7 @@ const Offeritem = ({navigation}) => {
           style={{borderRadius: 30, overflow: 'hidden', position: 'relative'}}>
           <Image
             source={require('../../assets/iconsassets/home-order-now.gif')}
+            //source={{uri: banner?.thumb_image}}
             style={{height: 200, width: '100%'}}
           />
           <View
@@ -169,274 +189,6 @@ const Offeritem = ({navigation}) => {
             <RenderCategoryItem item={item} navigation={navigation} />
           )}
         />
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 20,
-            borderBottomColor: 'lightgray',
-            borderBottomWidth: 0.8,
-          }}>
-          <View>
-            <View>
-              <Image
-                source={require('../../assets/mainscreenassets/RecommendedItems/idli-dosa.jpg')}
-                style={{width: 125, height: 125, borderRadius: 10}}
-                resizeMode="cover"
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                // position: 'absolute',
-                // // top: 10,
-                // // left: 10,
-                // bottom: 5,
-                // left: 55,
-                marginTop: -20,
-                alignSelf: 'center',
-                backgroundColor: '#fed920',
-                borderRadius: 40,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                marginBottom: 10,
-              }}
-              onPress={() => console.log('Add button pressed')}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
-                Add
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{marginHorizontal: 8, flex: 1}}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'black',
-                marginBottom: 5,
-              }}>
-              Idli Dosa
-            </Text>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'red',
-                marginBottom: 5,
-              }}>
-              120
-            </Text>
-            <Text
-              style={{
-                // fontSize: 20,
-                // fontWeight: 'bold',
-                // color: 'red',
-                marginBottom: 20,
-              }}>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Labore,
-              expedita exercitation
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 20,
-            borderBottomColor: 'lightgray',
-            borderBottomWidth: 0.8,
-          }}>
-          <View>
-            <View>
-              <Image
-                source={require('../../assets/mainscreenassets/RecommendedItems/idli-with-sambhar.jpg')}
-                style={{width: 125, height: 125, borderRadius: 10}}
-                resizeMode="cover"
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                // position: 'absolute',
-                // // top: 10,
-                // // left: 10,
-                // bottom: 5,
-                // left: 55,
-                marginTop: -20,
-                alignSelf: 'center',
-                backgroundColor: '#fed920',
-                borderRadius: 40,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                marginBottom: 10,
-              }}
-              onPress={() => console.log('Add button pressed')}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
-                Add
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{marginHorizontal: 8, flex: 1}}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'black',
-                marginBottom: 5,
-              }}>
-              Idli Sambhar
-            </Text>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'red',
-                marginBottom: 5,
-              }}>
-              120
-            </Text>
-            <Text
-              style={{
-                // fontSize: 20,
-                // fontWeight: 'bold',
-                // color: 'red',
-                marginBottom: 20,
-              }}>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Labore,
-              expedita exercitation
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 20,
-            borderBottomColor: 'lightgray',
-            borderBottomWidth: 0.8,
-          }}>
-          <View>
-            <View>
-              <Image
-                source={require('../../assets/mainscreenassets/RecommendedItems/masala-dosa.jpg')}
-                style={{width: 125, height: 125, borderRadius: 10}}
-                resizeMode="cover"
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                // position: 'absolute',
-                // // top: 10,
-                // // left: 10,
-                // bottom: 5,
-                // left: 55,
-                marginTop: -20,
-                alignSelf: 'center',
-                backgroundColor: '#fed920',
-                borderRadius: 40,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                marginBottom: 10,
-              }}
-              onPress={() => console.log('Add button pressed')}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
-                Add
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{marginHorizontal: 8, flex: 1}}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'black',
-                marginBottom: 5,
-              }}>
-              Masala Dosa
-            </Text>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'red',
-                marginBottom: 5,
-              }}>
-              120
-            </Text>
-            <Text
-              style={{
-                // fontSize: 20,
-                // fontWeight: 'bold',
-                // color: 'red',
-                marginBottom: 20,
-              }}>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Labore,
-              expedita exercitation
-            </Text>
-          </View>
-        </View>
-        <View
-          style={{
-            flexDirection: 'row',
-            marginTop: 20,
-            // borderBottomColor: 'lightgray',
-            // borderBottomWidth: 0.8,
-          }}>
-          <View>
-            <View>
-              <Image
-                source={require('../../assets/mainscreenassets/RecommendedItems/vada.jpg')}
-                style={{width: 125, height: 125, borderRadius: 10}}
-                resizeMode="cover"
-              />
-            </View>
-            <TouchableOpacity
-              style={{
-                // position: 'absolute',
-                // // top: 10,
-                // // left: 10,
-                // bottom: 5,
-                // left: 55,
-                marginTop: -20,
-                alignSelf: 'center',
-                backgroundColor: '#fed920',
-                borderRadius: 40,
-                paddingHorizontal: 20,
-                paddingVertical: 10,
-                // marginBottom: 10,
-              }}
-              onPress={() => console.log('Add button pressed')}>
-              <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
-                Add
-              </Text>
-            </TouchableOpacity>
-          </View>
-          <View style={{marginHorizontal: 8, flex: 1}}>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'black',
-                marginBottom: 5,
-              }}>
-              Vada
-            </Text>
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                color: 'red',
-                marginBottom: 5,
-              }}>
-              120
-            </Text>
-            <Text
-              style={{
-                // fontSize: 20,
-                // fontWeight: 'bold',
-                // color: 'red',
-                marginBottom: 20,
-              }}>
-              Lorem ipsum dolor sit, amet consectetur adipisicing elit. Labore,
-              expedita exercitation
-            </Text>
-          </View>
-        </View> */}
       </ScrollView>
     </SafeAreaView>
   );

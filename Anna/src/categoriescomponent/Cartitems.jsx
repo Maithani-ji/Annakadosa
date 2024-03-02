@@ -43,7 +43,7 @@ const CartItem = ({cartItem, updateQuantity}) => {
 
   if (qty >= 1) {
     return (
-      <View key={cartItem.id}>
+      <View key={cartItem.product_id}>
         <View
           style={{
             flexDirection: 'row',
@@ -70,8 +70,7 @@ const CartItem = ({cartItem, updateQuantity}) => {
               justifyContent: 'space-between',
               gap: 10,
             }}>
-            <TouchableOpacity
-              onPress={() => decrementQuantity(cartItem.quantity)}>
+            <TouchableOpacity onPress={() => decrementQuantity()}>
               <Image
                 source={require('../assets/iconsassets/minus.png')}
                 style={{width: 30, height: 30, tintColor: 'red'}}
@@ -89,8 +88,7 @@ const CartItem = ({cartItem, updateQuantity}) => {
                 {qty}
               </Text>
             </View>
-            <TouchableOpacity
-              onPress={() => incrementQuantity(cartItem.quantity)}>
+            <TouchableOpacity onPress={() => incrementQuantity()}>
               <Image
                 source={require('../assets/iconsassets/plus.png')}
                 style={{
@@ -110,7 +108,7 @@ const CartItem = ({cartItem, updateQuantity}) => {
                   color: 'green',
                   textAlignVertical: 'center',
                 }}>
-                ₹{cartItem.price}
+                ₹{cartItem.product_price}
               </Text>
             </View>
           </View>

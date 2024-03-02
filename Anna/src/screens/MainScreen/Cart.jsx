@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Loading from '../../loadingcomponent/loading';
 import axios from 'axios';
@@ -18,36 +18,91 @@ import {getData} from '../../utils/AsyncStorag';
 import {useFocusEffect} from '@react-navigation/native';
 import Snackbar from 'react-native-snackbar';
 
-const Cart = ({navigation}) => {
+const Cart = ({navigation, route}) => {
+  const [discount, setDiscount] = useState(null);
   const [load, setLoad] = useState(false);
   const [cartData, setCartData] = useState();
   const [uid, setuid] = useState();
+  const [instruction, setinstruction] = useState('');
+  const [offercartdata, setOfferCartData] = useState(null);
+  const [defaultaddress, setdefaultaddress] = useState(null);
+  const [addid, setaddid] = useState(null);
+  const [offercode, setoffercode] = useState(null);
   useFocusEffect(
-    React.useCallback(() => {
-      fetchData();
-    }, []),
+    useCallback(() => {
+      if (!route.params) {
+        fetchData();
+      } else {
+        const data = route.params.offercartdata;
+        const coupon = route.params.coupon;
+        setoffercode(coupon);
+        setOfferCartData(data);
+        setCartData(data);
+      }
+    }, [route.params]),
   );
-
+  const handleinstruction = () => {
+    if (instruction.trim() == '') {
+      Snackbar.show({
+        text: 'Add an instruction first',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      return;
+    }
+    Snackbar.show({
+      text: ' Instruction added to the cart.',
+      textColor: 'white',
+      backgroundColor: 'green',
+      duration: Snackbar.LENGTH_SHORT,
+      marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+    });
+  };
   const fetchData = async () => {
     setempty(false);
+    setoffercode(null);
+    // const couponcode = await getData('coupon');
+    // setcoupon(couponcode);
     const id = await getData('id');
     setuid(id);
     console.log('uid', id);
+    const defaultadd = await getData('address');
+    setdefaultaddress(defaultadd);
+    const addressid = await getData('addressid');
+    if (addressid == null) {
+      navigation.navigate('Address');
+      Snackbar.show({
+        text: 'Please, Add your Address.',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      return;
+    }
+    setaddid(addressid);
     try {
       setLoad(true);
-      const apiUrl = 'https://techiedom.com/annakadosa/api/cart/';
+      const apiUrl = 'https://newannakadosa.com/api/cart/';
 
-      const response = await axios.post(apiUrl, {id: id});
+      const response = await axios.post(apiUrl, {
+        user_id: id,
+        address_id: addressid,
+      });
       console.log('cart response', response.data);
-      if (response.data.data.length === 0) {
+      if (response.data.data.cart.length === 0) {
         setLoad(false);
         setempty(true); // Handle the case where data is not present or there's an error
+        //  setDiscount(null);
         return;
       }
 
       setLoad(false);
-
-      setCartData(response.data.data.cart);
+      console.log(response.data.data);
+      setCartData(response.data.data);
+      //setDiscount(null);
     } catch (error) {
       setLoad(false);
       Snackbar.show({
@@ -62,11 +117,11 @@ const Cart = ({navigation}) => {
       console.error('Error fetching data:', error);
     }
   };
-  // console.log('uid', uid);
+
   const updateQuantity = async (product_id, qty) => {
     try {
       const id = await getData('id');
-      const apiUrl = 'https://techiedom.com/annakadosa/api/update/cart/';
+      const apiUrl = 'https://newannakadosa.com/api/update/cart/';
 
       const body = {
         user_id: id,
@@ -76,6 +131,18 @@ const Cart = ({navigation}) => {
 
       const response = await axios.post(apiUrl, body);
       //console.log(body);
+      if (qty == 0) {
+        Snackbar.show({
+          text: 'Item removed from Cart.',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        console.log('item removed successfully!', response.data);
+        fetchData();
+        return;
+      }
       Snackbar.show({
         text: 'Cart Updated Successfully',
         textColor: 'white',
@@ -98,16 +165,13 @@ const Cart = ({navigation}) => {
     }
   };
 
-  const CartData = cartData?.map(item => ({
+  const CartData = cartData?.cart?.map(item => ({
     product_id: item.product_id,
     qty: item.qty.toString(), // Assuming qty needs to be a string
     size: 'standard', // Assuming size is constant, change it accordingly
   }));
-  console.log('transformedcart:', CartData);
-  const subtotalAmount = cartData?.reduce((accumulator, currentItem) => {
-    return accumulator + currentItem.price * currentItem.qty;
-  }, 0);
-  const totalAmount = subtotalAmount - 4.25 - 100;
+  console.log('cartdata', CartData);
+
   const [date, setdate] = useState(new Date());
   const [mode, setmode] = useState('');
   const [show, setshow] = useState(false);
@@ -141,8 +205,8 @@ const Cart = ({navigation}) => {
           <Image
             source={require('../../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -210,154 +274,208 @@ const Cart = ({navigation}) => {
               onPress={() => navigation.navigate('Menu')}
               style={{
                 backgroundColor: 'green',
-                padding: 20,
+                padding: 15,
                 alignSelf: 'center',
                 borderRadius: 40,
-                marginTop: 20,
+                marginTop: 25,
               }}>
-              <Text style={{color: 'yellow', fontWeight: 'bold'}}>
+              <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
                 Explore Menu
               </Text>
             </TouchableOpacity>
           </View>
         </View>
       ) : (
-        <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
-          {show && (
-            <DateTimePicker
-              testID="datetimepicker"
-              value={date}
-              mode={mode}
-              is24Hour={true}
-              display="default"
-              onChange={onchange}
-            />
-          )}
-          <View style={{borderBottomWidth: 0.8, borderColor: 'lightgray'}}>
-            <Text
+        <>
+          <TouchableOpacity onPress={() => navigation.navigate('Address')}>
+            <View
               style={{
-                fontSize: 23,
-                color: 'black',
-                fontWeight: 'bold',
-                marginBottom: 10,
-              }}>
-              Order List
-            </Text>
-          </View>
-          {
-            //cartData &&
-            cartData?.map((cartItem, index) => (
-              <CartItem
-                key={cartItem.id}
-                cartItem={cartItem}
-                updateQuantity={updateQuantity}
-                // other props...
-              />
-            ))
-          }
-
-          <View
-            style={{
-              marginVertical: 10,
-
-              borderRadius: 20,
-              borderWidth: 0.3,
-              borderColor: 'gray',
-              padding: 8,
-            }}>
-            <TouchableOpacity
-              //  onPress={() => navigation.navigate('Addgiftcard')}
-              style={{
-                flexDirection: 'row',
                 borderBottomColor: 'lightgray',
-                //borderBottomWidth: 0.5,
-                // marginVertical: 5,
-                // paddingBottom: 10,
+                // borderBottomWidth: 0.8,
+                marginVertical: 10,
+                paddingHorizontal: 10,
+                padding: 2.5,
               }}>
-              <TouchableOpacity
-              // onPress={() => navigation.navigate('Addgiftcard')}
-              >
-                <Image
-                  source={require('../../assets/iconsassets/instruc.png')}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    marginTop: 10,
-                    marginLeft: 8,
-                  }}
-                />
-              </TouchableOpacity>
+              <View View style={{flexDirection: 'row'}}>
+                <View>
+                  <Image
+                    source={require('../../assets/iconsassets/location.png')}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      tintColor: 'red',
+                    }}
+                  />
+                </View>
+                <View style={{flex: 1, marginLeft: 5}}>
+                  {/* //<View style={{marginVertical: 10, flex: 1}}> */}
+                  <Text
+                    style={{
+                      //  flex: 1,
+                      fontSize: 17,
+                      //sfontWeight: 'bold',
+                      color: 'black',
 
-              <TextInput
-                placeholder="Write instruction for Anna ka dosa"
-                style={{
-                  // flex: 1,
-                  fontSize: 15,
-
-                  color: 'black',
-                  marginLeft: 10,
-                }}
-              />
-            </TouchableOpacity>
-          </View>
-          <View
-            style={{
-              //    marginVertical: 10,
-
-              borderRadius: 20,
-              borderWidth: 0.3,
-              borderColor: 'gray',
-              padding: 15,
-            }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('Annaoffer')}
+                      //textAlignVertical: 'center',
+                    }}>
+                    {defaultaddress != null
+                      ? defaultaddress
+                      : 'Select your Address'}
+                  </Text>
+                  {/* // </View> */}
+                </View>
+                <TouchableOpacity
+                  onPress={() => navigation.navigate('Address')}>
+                  <Text
+                    style={{
+                      //  flex: 1,
+                      fontSize: 16,
+                      //sfontWeight: 'bold',
+                      color: 'red',
+                      marginLeft: 20,
+                      textAlignVertical: 'center',
+                    }}>
+                    Change
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </TouchableOpacity>
+          <ScrollView
+            showsVerticalScrollIndicator={false}
+            style={{marginHorizontal: 20}}>
+            <View
               style={{
-                flexDirection: 'row',
-                borderBottomColor: 'lightgray',
-                //borderBottomWidth: 0.5,
-                // marginVertical: 5,
-                // paddingBottom: 10,
+                borderBottomWidth: 0.8,
+                borderColor: 'lightgray',
+                // marginTop: 20,
               }}>
-              <TouchableOpacity
-              //onPress={() => navigation.navigate('Rateus')}
-              >
-                <Image
-                  source={require('../../assets/iconsassets/offer.png')}
-                  style={{
-                    width: 30,
-                    height: 30,
-                    tintColor: 'red',
-                  }}
-                />
-              </TouchableOpacity>
               <Text
                 style={{
-                  flex: 1,
-                  fontSize: 18,
-
+                  fontSize: 23,
                   color: 'black',
-                  marginLeft: 14,
-                  textAlignVertical: 'center',
+                  fontWeight: 'bold',
+                  marginBottom: 10,
                 }}>
-                Apply Anna Dosa Offer
+                Order List
               </Text>
+            </View>
+            {
+              //cartData &&
+              cartData?.cart?.map((cartItem, index) => (
+                <CartItem
+                  key={cartItem.product_id}
+                  cartItem={cartItem}
+                  updateQuantity={updateQuantity}
+                  // other props...
+                />
+              ))
+            }
+
+            <View
+              style={{
+                marginVertical: 10,
+
+                borderRadius: 20,
+                borderWidth: 0.3,
+                borderColor: 'gray',
+                padding: 8,
+              }}>
               <TouchableOpacity
-                style={{borderRadius: 40, overflow: 'hidden'}}
-                onPress={() => navigation.navigate('Annaoffer')}>
-                <Image
-                  source={require('../../assets/iconsassets/arrowr.png')}
+                //onPress={handleinstruction}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: 'lightgray',
+                  //borderBottomWidth: 0.5,
+                  // marginVertical: 5,
+                  // paddingBottom: 10,
+                }}>
+                <TouchableOpacity onPress={handleinstruction}>
+                  <Image
+                    source={require('../../assets/iconsassets/instruc.png')}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      marginTop: 10,
+                      marginLeft: 8,
+                    }}
+                  />
+                </TouchableOpacity>
+
+                <TextInput
+                  placeholder="Write instructions for Anna ka dosa"
                   style={{
-                    width: 20,
-                    height: 20,
-                    tintColor: 'red',
-                    marginTop: 7,
+                    // flex: 1,
+                    fontSize: 15,
+
+                    color: 'black',
+                    marginLeft: 10,
                   }}
-                  //  resizeMode="cover"
+                  value={instruction}
+                  onChangeText={setinstruction}
+                  onSubmitEditing={handleinstruction}
                 />
               </TouchableOpacity>
-            </TouchableOpacity>
-          </View>
-          <View
+            </View>
+            <View
+              style={{
+                //    marginVertical: 10,
+
+                borderRadius: 20,
+                borderWidth: 0.3,
+                borderColor: 'gray',
+                padding: 15,
+              }}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Annaoffer')}
+                style={{
+                  flexDirection: 'row',
+                  borderBottomColor: 'lightgray',
+                  //borderBottomWidth: 0.5,
+                  // marginVertical: 5,
+                  // paddingBottom: 10,
+                }}>
+                <TouchableOpacity
+                //onPress={() => navigation.navigate('Rateus')}
+                >
+                  <Image
+                    source={require('../../assets/iconsassets/offer.png')}
+                    style={{
+                      width: 30,
+                      height: 30,
+                      tintColor: 'red',
+                    }}
+                  />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    flex: 1,
+                    fontSize: 18,
+
+                    color: 'black',
+                    marginLeft: 14,
+                    textAlignVertical: 'center',
+                  }}>
+                  Apply Anna Dosa Offer
+                </Text>
+                <TouchableOpacity
+                  style={{borderRadius: 40, overflow: 'hidden'}}
+                  onPress={() => navigation.navigate('Annaoffer')}>
+                  <Image
+                    source={require('../../assets/iconsassets/arrowr.png')}
+                    style={{
+                      width: 20,
+                      height: 20,
+                      tintColor: 'red',
+                      marginTop: 7,
+                    }}
+                    //  resizeMode="cover"
+                  />
+                </TouchableOpacity>
+              </TouchableOpacity>
+            </View>
+
+            {/* <View
             style={{
               marginVertical: 10,
 
@@ -413,8 +531,8 @@ const Cart = ({navigation}) => {
                 />
               </TouchableOpacity>
             </TouchableOpacity>
-          </View>
-          <View
+          </View> */}
+            {/* <View
             style={{
               //    marginVertical: 10,
 
@@ -422,6 +540,7 @@ const Cart = ({navigation}) => {
               borderWidth: 0.3,
               borderColor: 'gray',
               padding: 15,
+              marginTop: 10,
             }}>
             <TouchableOpacity
               onPress={() => showMode('time')}
@@ -469,157 +588,189 @@ const Cart = ({navigation}) => {
                 />
               </TouchableOpacity>
             </TouchableOpacity>
-          </View>
-          <View style={{borderBottomWidth: 0.8, borderColor: 'lightgray'}}>
-            <Text
-              style={{
-                fontSize: 23,
-                color: 'black',
-                fontWeight: 'bold',
-                marginBottom: 10,
-                marginTop: 30,
-              }}>
-              Bill Details
-            </Text>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+          </View> */}
+            <View style={{borderBottomWidth: 0.8, borderColor: 'lightgray'}}>
               <Text
                 style={{
-                  fontSize: 19,
-                  color: 'gray',
-
+                  fontSize: 23,
+                  color: 'black',
+                  fontWeight: 'bold',
                   marginBottom: 10,
+                  marginTop: 30,
                 }}>
-                Subtotal
+                Bill Details
               </Text>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'gray',
 
+                    marginBottom: 10,
+                  }}>
+                  Subtotal
+                </Text>
+
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'black',
+
+                    marginBottom: 10,
+                  }}>
+                  ₹{cartData?.total_price}
+                </Text>
+              </View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'gray',
+
+                    marginBottom: 10,
+                  }}>
+                  Delivery charge
+                </Text>
+
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'black',
+
+                    marginBottom: 10,
+                  }}>
+                  + ₹{cartData?.delivery_fee}
+                </Text>
+              </View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'gray',
+
+                    marginBottom: 10,
+                  }}>
+                  Discount(offer)
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'green',
+
+                    marginBottom: 10,
+                  }}>
+                  - ₹{cartData?.coupon}
+                </Text>
+              </View>
+              <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'gray',
+
+                    marginBottom: 10,
+                  }}>
+                  GST(5%)
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 19,
+                    color: 'black',
+
+                    marginBottom: 20,
+                  }}>
+                  + ₹{cartData?.gst}
+                </Text>
+              </View>
+            </View>
+            <View
+              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <Text
                 style={{
                   fontSize: 19,
                   color: 'black',
-
+                  fontWeight: 'bold',
                   marginBottom: 10,
+                  marginTop: 10,
                 }}>
-                ₹{subtotalAmount}
-              </Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text
-                style={{
-                  fontSize: 19,
-                  color: 'gray',
-
-                  marginBottom: 10,
-                }}>
-                Delivery charge
-              </Text>
-
-              <Text
-                style={{
-                  fontSize: 19,
-                  color: 'black',
-
-                  marginBottom: 10,
-                }}>
-                0
-              </Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text
-                style={{
-                  fontSize: 19,
-                  color: 'gray',
-
-                  marginBottom: 10,
-                }}>
-                Discount
-              </Text>
-              <Text
-                style={{
-                  fontSize: 19,
-                  color: 'green',
-
-                  marginBottom: 10,
-                }}>
-                ₹100
-              </Text>
-            </View>
-            <View
-              style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-              <Text
-                style={{
-                  fontSize: 19,
-                  color: 'gray',
-
-                  marginBottom: 10,
-                }}>
-                GST
+                Total
               </Text>
               <Text
                 style={{
                   fontSize: 19,
                   color: 'black',
-
-                  marginBottom: 20,
+                  marginTop: 10,
+                  marginBottom: 10,
+                  fontWeight: 'bold',
                 }}>
-                ₹4.25
+                ₹{cartData?.grand_total}
               </Text>
             </View>
-          </View>
-          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-            <Text
-              style={{
-                fontSize: 19,
-                color: 'black',
+            <TouchableOpacity
+              onPress={() => {
+                navigation.navigate('Paymentmethod', {
+                  details: {
+                    cart: CartData,
+                    //order_id: response?.data?.data?.order_id,
+                    delivery_charge: cartData?.delivery_fee,
+                    user_id: uid,
+                    coupon: cartData?.coupon,
+                    coupon_code: offercode == null ? '' : offercode,
+                    payment_method: '',
+                    amount: cartData?.total_price,
+                    total: cartData?.grand_total,
+                    gst: cartData?.gst,
+                    //optional_item_price: '0',
+                    instruction: instruction,
+                    address_id: addid,
+                    online_order_id: '',
+                  },
+                });
+                route.params = null;
+              }}
+              // {
+              //   let details = {
+              //     cart: CartData,
+              //     //order_id: response?.data?.data?.order_id,
+              //     delivery_charge: cartData?.delivery_fee,
+              //     user_id: uid,
+              //     coupon: cartData?.coupon,
+              //     coupon_code: offercode == null ? '' : offercode,
+              //     payment_method: '',
+              //     amount: cartData?.total_price,
+              //     total: cartData?.grand_total,
+              //     gst: cartData?.gst,
+              //     //optional_item_price: '0',
+              //     instruction: instruction,
+              //     address_id: addid,
+              //   };
+              //   console.log(details);
+              // }
 
-                marginBottom: 10,
-              }}>
-              Total
-            </Text>
-            <Text
+              //onPress={handlecreateOrder}
               style={{
-                fontSize: 19,
-                color: 'black',
-
-                marginBottom: 10,
+                marginVertical: 30,
+                alignSelf: 'center',
+                backgroundColor: 'green',
+                borderRadius: 40,
+                paddingHorizontal: 15,
+                paddingVertical: 15,
               }}>
-              ₹{totalAmount}
-            </Text>
-          </View>
-          <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('Paymentmethod', {
-                details: {
-                  cart: CartData,
-                  delivery_charge: 0,
-                  user_id: uid,
-                  coupon: 100,
-                  payment_method: '',
-                  amount: totalAmount,
-                  total: totalAmount,
-                  optional_item_price: '150',
-                },
-              })
-            }
-            style={{
-              marginVertical: 30,
-              alignSelf: 'center',
-              backgroundColor: 'green',
-              borderRadius: 40,
-              padding: 25,
-            }}>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: 'yellow',
-              }}>
-              Proceed To Checkout
-            </Text>
-          </TouchableOpacity>
-        </ScrollView>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: 'yellow',
+                }}>
+                Proceed To Checkout
+              </Text>
+            </TouchableOpacity>
+          </ScrollView>
+        </>
       )}
     </SafeAreaView>
   );

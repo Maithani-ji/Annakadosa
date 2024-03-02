@@ -18,8 +18,8 @@ const ManageAddress = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -50,12 +50,12 @@ const ManageAddress = ({navigation}) => {
           onPress={() => navigation.navigate('Address')}
           style={{
             backgroundColor: 'green',
-            padding: 20,
+            padding: 15,
             alignSelf: 'center',
             borderRadius: 40,
             marginTop: 150,
           }}>
-          <Text style={{color: 'yellow', fontWeight: 'bold'}}>
+          <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
             Your Address
           </Text>
         </TouchableOpacity>

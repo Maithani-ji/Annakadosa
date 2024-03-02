@@ -8,46 +8,101 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useMemo, useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
+import {Dropdown} from 'react-native-element-dropdown';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
-import {getData} from '../utils/AsyncStorag';
+import {getData, storeData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
 
 const Addaddress = ({navigation, route}) => {
+  const [value, setValue] = useState(null);
   const {editable, editaddress} = route?.params;
   const [load, setload] = useState(false);
+  const [deliveryid, setdeliveryid] = useState(null);
+  useEffect(() => {
+    const setDeliveryId = async () => {
+      if (editable) {
+        await setdeliveryid(editaddress?.delivery_area_id);
+      }
+    };
+    setDeliveryId();
+  }, [editable, editaddress?.delivery_area_id]);
   const initialState = editaddress
     ? {
         selectedId: editaddress.type === 'home' ? '1' : '2',
         selectedtype: editaddress.type,
         address: editaddress.address,
         landmark: editaddress.landmark,
+        //  deliveryid: editaddress.delivery_area_id,
       }
     : {
         selectedId: null,
         selectedtype: '',
         address: '',
         landmark: '',
+        //  deliveryid: null,
       };
 
   const [selectedId, setSelectedId] = useState(initialState.selectedId);
   const [selectedtype, setSelectedtype] = useState(initialState.selectedtype);
   const [address, setAddress] = useState(initialState.address);
   const [landmark, setLandmark] = useState(initialState.landmark);
+  const [area, setareaData] = useState([]);
+
+  console.log('deliveryid', deliveryid);
+  useEffect(() => {
+    getareadetails();
+  }, []);
+  const getareadetails = async () => {
+    setload(true);
+    try {
+      const id = await getData('id');
+      const response = await axios.get(
+        'https://newannakadosa.com/api/delivered/area',
+      );
+      setload(false);
+      // console.log('address', response.data.data);
+      setareaData(response.data.data);
+      // Snackbar.show({
+      //   text: 'Address added  Successfully',
+      //   textColor: 'white',
+      //   backgroundColor: 'green',
+      //   duration: Snackbar.LENGTH_SHORT,
+      //   marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      // });
+      // navigation.replace('Address');
+    } catch (error) {
+      setload(false);
+      // Snackbar.show({
+      //   text: 'Error in adding Address',
+      //   textColor: 'white',
+      //   backgroundColor: 'red',
+      //   duration: Snackbar.LENGTH_SHORT,
+      //   marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      // });
+      // navigation.replace('Address');
+      console.error('Error adding address:', error);
+    }
+  };
+
   const handleaddressadd = async () => {
     //console.log('address', address, selectedtype, landmark);
     setload(true);
     try {
+      if (deliveryid == null || !address || !landmark || !selectedtype) {
+        Alert.alert('Please fill all the fields ');
+        setload(false);
+        return;
+      }
       const id = await getData('id');
       const response = await axios.post(
-        'https://techiedom.com/annakadosa/api/add/address',
+        'https://newannakadosa.com/api/add/address',
         {
           user_id: id,
-          delivery_area_id: 5,
-          first_name: 'raj',
-          last_name: 'singh',
+          delivery_area_id: deliveryid,
+
           address: address,
           address_type: selectedtype,
           landmark: landmark,
@@ -63,6 +118,17 @@ const Addaddress = ({navigation, route}) => {
         duration: Snackbar.LENGTH_SHORT,
         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
       });
+      await storeData(
+        'address',
+
+        response?.data?.data?.address.concat(
+          ' ',
+          ',',
+          ' ',
+          response?.data?.data?.landmark,
+        ),
+      );
+      await storeData('addressid', response?.data.data.id.toString());
       navigation.replace('Address');
     } catch (error) {
       setload(false);
@@ -79,29 +145,32 @@ const Addaddress = ({navigation, route}) => {
   };
   const handleeditaddress = async () => {
     setload(true);
+    const id = await getData('id');
     try {
       const addressData = {
-        id: editaddress.id,
-        delivery_area_id: 5,
-        first_name: 'raj',
-        last_name: 'singh',
+        user_id: id,
+        address_id: editaddress.id,
+        delivery_area_id: deliveryid, // Ensure it's a string
+        first_name: 'null', // Modify this according to your requirements
+        last_name: 'null', // Modify this according to your requirements
         address: address,
         address_type: selectedtype,
         landmark: landmark,
       };
-      console.log(addressData);
+      console.log('addressdata', addressData);
       const response = await axios.post(
-        'https://techiedom.com/annakadosa/api/update/address',
+        'https://newannakadosa.com/api/update/address',
         addressData,
       );
+
       setload(false);
-      console.log('address', response.data);
+      console.log('address of edit ', response.data);
       Snackbar.show({
         text: 'Address Edited Successfully',
         textColor: 'white',
         backgroundColor: 'green',
         duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        marginBottom: 70,
       });
       navigation.replace('Address');
     } catch (error) {
@@ -111,7 +180,7 @@ const Addaddress = ({navigation, route}) => {
         textColor: 'white',
         backgroundColor: 'red',
         duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        marginBottom: 70,
       });
       navigation.replace('Address');
       console.error('Error editing address:', error);
@@ -120,10 +189,13 @@ const Addaddress = ({navigation, route}) => {
   const handledeleteaddress = async () => {
     setload(true);
     try {
+      const storedAddressId = await getData('addressid');
+      const id = await getData('id');
       const response = await axios.post(
-        'https://techiedom.com/annakadosa/api/destroy/address',
+        'https://newannakadosa.com/api/destroy/address',
         {
-          id: editaddress.id,
+          address_id: editaddress.id,
+          user_id: id,
         },
       );
       setload(false);
@@ -136,7 +208,11 @@ const Addaddress = ({navigation, route}) => {
       });
       // Handle the response as needed
       console.log('Delete address response:', response.data);
-      navigation.replace('Main');
+      if (storedAddressId == editaddress.id) {
+        await storeData('address', null);
+        await storeData('addressid', null);
+      }
+      navigation.replace('Address');
       // Additional logic after successful deletion
     } catch (error) {
       setload(false);
@@ -172,6 +248,11 @@ const Addaddress = ({navigation, route}) => {
     ],
     [],
   );
+  const data = area?.map(area => ({
+    label: area.area_name,
+    value: area.id.toString(),
+  }));
+
   if (load) {
     return <Loading />;
   }
@@ -183,8 +264,8 @@ const Addaddress = ({navigation, route}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -215,6 +296,45 @@ const Addaddress = ({navigation, route}) => {
         )}
       </View>
       <View style={{margin: 20}}>
+        <View
+          style={{
+            //  flex: 1,
+            margin: 0,
+            borderBottomWidth: 1,
+            borderColor: 'lightgray',
+          }}>
+          <Dropdown
+            style={{
+              // color: 'black',
+              paddingVertical: 5,
+              // fontSize: 18,
+              marginLeft: 4,
+            }}
+            placeholderStyle={{
+              color: 'black',
+              fontSize: 18,
+              //    marginRight: 10,
+            }}
+            data={data}
+            search
+            labelField="label"
+            valueField="value"
+            placeholder={
+              deliveryid == undefined
+                ? 'select your area'
+                : data[deliveryid - 1]?.label
+            }
+            searchPlaceholder="Search..."
+            value={value} // Current selected value
+            onChange={item => {
+              setValue(item.value);
+              //console.log(item);
+              setdeliveryid(item.value);
+              console.log('deliveryid', deliveryid);
+            }} // Update the value in the state
+            selectedTextStyle={{fontSize: 18, color: 'black'}}
+          />
+        </View>
         <View>
           {/* <Text
             style={{
@@ -300,8 +420,8 @@ const Addaddress = ({navigation, route}) => {
             alignSelf: 'center',
             backgroundColor: 'green',
             borderRadius: 40,
-            paddingHorizontal: 25,
-            paddingVertical: 10,
+            paddingHorizontal: 15,
+            paddingVertical: 15,
           }}>
           {editable ? (
             <Text
@@ -319,7 +439,7 @@ const Addaddress = ({navigation, route}) => {
                 fontWeight: 'bold',
                 color: 'yellow',
               }}>
-              Add
+              Save Address
             </Text>
           )}
         </TouchableOpacity>
@@ -332,8 +452,8 @@ const Addaddress = ({navigation, route}) => {
               alignSelf: 'center',
               backgroundColor: 'red',
               borderRadius: 40,
-              paddingHorizontal: 25,
-              paddingVertical: 10,
+              paddingHorizontal: 15,
+              paddingVertical: 15,
             }}>
             <Text
               style={{

@@ -19,8 +19,8 @@ const Orderinghelp = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>

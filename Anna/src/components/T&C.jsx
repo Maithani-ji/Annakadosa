@@ -10,8 +10,10 @@ import {
 import React, {useEffect, useState} from 'react';
 import Loading from '../loadingcomponent/loading';
 import axios from 'axios';
-
+import RenderHtml from 'react-native-render-html';
+import {useWindowDimensions} from 'react-native';
 const Terms = ({navigation}) => {
+  const {width} = useWindowDimensions();
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState('');
   useEffect(() => {
@@ -22,7 +24,7 @@ const Terms = ({navigation}) => {
     setLoad(true);
     try {
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/terms/condition',
+        'https://newannakadosa.com/api/terms/condition',
       );
 
       // Assuming the API returns a JSON object
@@ -30,7 +32,8 @@ const Terms = ({navigation}) => {
 
       // Do something with the fetched details
       console.log('Fetched Details:', data);
-      setDetails(data.privacy_policy);
+      setDetails(data.terms_and_condition);
+
       // You can return the fetched details or process them further
     } catch (error) {
       // Handle errors here
@@ -51,8 +54,8 @@ const Terms = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -68,17 +71,13 @@ const Terms = ({navigation}) => {
           Terms & Conditions
         </Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
-        <View>
-          <Text
-            style={{
-              fontSize: 16,
-              color: 'gray',
-
-              marginBottom: 20,
-            }}>
-            {details}
-          </Text>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
+        <View style={{marginTop: 20}}>
+          {details && (
+            <RenderHtml contentWidth={width} source={{html: details}} />
+          )}
         </View>
         {/* <View>
           <Text

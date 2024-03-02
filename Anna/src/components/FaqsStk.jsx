@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
   SafeAreaView,
@@ -8,27 +8,43 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-
+import Loading from '../loadingcomponent/loading';
+import axios from 'axios';
+import RenderHTML from 'react-native-render-html';
+import {useWindowDimensions} from 'react-native';
 const Faqs = ({navigation}) => {
-  const [showItems, setShowItems] = useState(Array(9).fill(false));
+  const {width} = useWindowDimensions();
+  const [faqsdata, setFaqsData] = useState([]);
+  const [load, setLoad] = useState(false);
+  const [showItems, setShowItems] = useState({});
 
-  const handleShowItem = index => {
-    const updatedShowItems = [...showItems];
-    updatedShowItems[index] = !updatedShowItems[index];
-    setShowItems(updatedShowItems);
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
+
+  const handleShowItem = id => {
+    setShowItems(prevShowItems => ({
+      ...prevShowItems,
+      [id]: !prevShowItems[id],
+    }));
   };
 
-  const questions = [
-    'Can I do cash on delivery for contactless delivery?',
-    'How do I know where my pizzas will be kept?',
-    'My money is deducted but order is not showing in order screen.',
-    'If my order is in rejected status, what will happen to my money?',
-    'What is the refund cycle of payments?',
-    'Where can I avail contactless delivery?',
-    'What if I want to cancel my order after paying?',
-    'Is there cash on delivery available?',
-    'How can I track my order?',
-  ];
+  const fetchFaqs = async () => {
+    setLoad(true);
+    try {
+      const response = await axios.get('https://newannakadosa.com/api/faq/');
+      console.log(response?.data?.data);
+      setFaqsData(response?.data?.data);
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      console.error('Error fetching FAQ data:', error);
+    }
+  };
+
+  if (load) {
+    return <Loading />;
+  }
 
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -38,8 +54,8 @@ const Faqs = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -54,48 +70,54 @@ const Faqs = ({navigation}) => {
           FAQs
         </Text>
       </View>
-      <ScrollView style={{margin: 20}} showsVerticalScrollIndicator={false}>
-        {questions.map((question, index) => (
-          <TouchableOpacity
-            key={index}
-            onPress={() => handleShowItem(index)}
-            style={{
-              borderBottomWidth: 0.8,
-              borderColor: 'lightgray',
-              marginBottom: 20,
-            }}>
-            <View style={{flexDirection: 'row', marginBottom: 20}}>
-              <Text
-                style={{
-                  flex: 1,
-                  fontSize: 18,
-                  fontWeight: 'bold',
-                  color: 'black',
-                }}>
-                {question}
-              </Text>
-              <View>
-                <Image
-                  source={require('../assets/iconsassets/dropdown.png')}
+      <ScrollView
+        style={{marginHorizontal: 20}}
+        showsVerticalScrollIndicator={false}>
+        <View style={{marginTop: 20}}>
+          {faqsdata?.map(data => (
+            <TouchableOpacity
+              key={data.id}
+              onPress={() => handleShowItem(data.id)}
+              style={{
+                borderBottomWidth: 0.8,
+                borderColor: 'lightgray',
+                marginBottom: 20,
+              }}>
+              <View style={{flexDirection: 'row', marginBottom: 10}}>
+                <Text
                   style={{
-                    width: 25,
-                    height: 25,
-                    tintColor: 'red',
-                  }}
-                />
-              </View>
-            </View>
-            {showItems[index] && (
-              <View style={{marginBottom: 20}}>
-                <Text>
-                  No, you cannot opt for cash-on-delivery. Since we are trying
-                  to make this entire process contactless, cash-on-delivery in
-                  this case will not be possible.
+                    flex: 1,
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    color: 'black',
+                  }}>
+                  {data?.question}
                 </Text>
+                <View>
+                  <Image
+                    source={require('../assets/iconsassets/dropdown.png')}
+                    style={{
+                      width: 25,
+                      height: 25,
+                      tintColor: 'red',
+                    }}
+                  />
+                </View>
               </View>
-            )}
-          </TouchableOpacity>
-        ))}
+              <View style={{marginBottom: showItems ? 10 : 0}}>
+                {showItems[data.id] && (
+                  // <View style={{marginBottom: 20}}>
+                  //   <Text>{data?.answer}</Text>
+                  // </View>
+                  <RenderHTML
+                    contentWidth={width}
+                    source={{html: data?.answer}}
+                  />
+                )}
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

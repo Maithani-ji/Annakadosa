@@ -9,7 +9,9 @@ import {
 import React from 'react';
 
 const Paymentcomplete = ({navigation, route}) => {
-  const {details} = route.params;
+  const {details, data} = route.params;
+  console.log(details, data);
+
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       {/* <View
@@ -54,7 +56,7 @@ const Paymentcomplete = ({navigation, route}) => {
               //marginLeft: 20,
               textAlign: 'center',
             }}>
-            Payment Success
+            Order Confirmed
           </Text>
           <Text
             style={{

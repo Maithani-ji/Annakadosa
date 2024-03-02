@@ -26,24 +26,26 @@ const Address = ({navigation}) => {
   const fetchData = async () => {
     setload(true);
     const id = await getData('id');
+    const storedAddressId = await getData('addressid');
+    //console.log('addressid', storedAddressId);
     try {
       const requestBody = {
         user_id: id,
       };
 
       const response = await axios.post(
-        'https://techiedom.com/annakadosa/api/user/address/',
+        'https://newannakadosa.com/api/user/address/',
         requestBody,
       );
 
-      console.log('address', response.data.data);
+      //console.log('address', response.data.data);
 
       // Check if response data array is empty
       if (response.data.data.length === 0) {
         Snackbar.show({
-          text: 'Please add your address !!',
+          text: 'Please add your Address',
           textColor: 'black',
-          backgroundColor: 'gray',
+          backgroundColor: 'orange',
           duration: Snackbar.LENGTH_LONG,
           marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
         });
@@ -54,14 +56,19 @@ const Address = ({navigation}) => {
 
       // Update state with the fetched data
       setAddresses(response.data.data);
+      if (!!storedAddressId) {
+        setaddid(storedAddressId);
+      }
       setload(false);
     } catch (error) {
       console.error('API error:', error);
       setload(false);
     }
   };
+  const [addid, setaddid] = useState('');
   const [addresses, setAddresses] = useState([]);
   const [load, setload] = useState(false);
+  // const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
   if (!load) {
     return (
       <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
@@ -75,8 +82,8 @@ const Address = ({navigation}) => {
             <Image
               source={require('../assets/iconsassets/left-arrow.png')}
               style={{
-                width: 35,
-                height: 35,
+                width: 30,
+                height: 30,
               }}
             />
           </TouchableOpacity>
@@ -95,20 +102,37 @@ const Address = ({navigation}) => {
         <ScrollView
           showsVerticalScrollIndicator={false}
           style={{
-            margin: 20,
+            marginHorizontal: 20,
           }}>
-          {addresses?.map(address => (
+          {addresses?.map((address, index) => (
             <TouchableOpacity
               key={address.id}
               onPress={async () => {
-                await storeData('address', address?.address);
-                Alert.alert('Success', 'Address selected Successfully!!');
+                await storeData(
+                  'address',
+                  address?.address.concat(' ', ',', ' ', address?.landmark),
+                );
+                await storeData('addressid', address?.id.toString());
+
+                Snackbar.show({
+                  text: 'Address selected Successfully',
+                  textColor: 'white',
+                  backgroundColor: 'green',
+                  duration: Snackbar.LENGTH_SHORT,
+                  marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+                });
+                fetchData();
+                //  setSelectedAddressIndex(index);
               }}
               style={{
                 padding: 15,
-                borderWidth: 0.8,
-                borderColor: 'lightgray',
-                marginTop: 10,
+                borderWidth:
+                  addid !== '' && addid == address.id.toString() ? 1 : 0.8,
+                borderColor:
+                  addid !== '' && addid == address.id.toString()
+                    ? 'green'
+                    : 'lightgray',
+                marginTop: 20,
               }}>
               <View style={{flexDirection: 'row'}}>
                 <View>
@@ -128,12 +152,13 @@ const Address = ({navigation}) => {
                   </Text>
                 </View>
                 <TouchableOpacity
-                  onPress={() =>
-                    navigation.navigate('Addaddress', {
+                  onPress={() => {
+                    navigation.replace('Addaddress', {
                       editable: true,
                       editaddress: address,
-                    })
-                  }>
+                    });
+                    //console.log('address', address);
+                  }}>
                   <Image
                     source={require('../assets/iconsassets/edit.png')}
                     style={{
@@ -145,25 +170,25 @@ const Address = ({navigation}) => {
                   />
                 </TouchableOpacity>
               </View>
-              <View>
+              <View style={{flex: 1}}>
                 <Text
-                  style={{fontSize: 17, color: 'black', marginVertical: 10}}>
-                  {address.address}
+                  style={{fontSize: 15, color: 'black', marginVertical: 10}}>
+                  {address.address} , {address.landmark}
                 </Text>
               </View>
             </TouchableOpacity>
           ))}
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('Addaddress', {editable: false})}
+            onPress={() => navigation.replace('Addaddress', {editable: false})}
             style={{
               backgroundColor: 'green',
-              padding: 20,
+              padding: 15,
               alignSelf: 'center',
               borderRadius: 40,
               marginTop: 250,
             }}>
-            <Text style={{color: 'yellow', fontWeight: 'bold'}}>
+            <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
               Add Address
             </Text>
           </TouchableOpacity>

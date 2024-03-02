@@ -10,21 +10,67 @@ import {
   View,
 } from 'react-native';
 import React, {useState} from 'react';
+import Loading from '../loadingcomponent/loading';
+import {getData} from '../utils/AsyncStorag';
+import axios from 'axios';
+import Snackbar from 'react-native-snackbar';
 
 const Feedback = ({navigation}) => {
   const [defaultrating, setdefaultrating] = useState(1);
   const [starmp, setstarmp] = useState([1, 2, 3, 4, 5]);
-  const [feedback, setFeedback] = useState();
-  const handlesubmit = () => {
-    if (feedback.trim() === '') {
-      Alert.alert('Please wrtie a feedback first');
-      return;
+  const [feedback, setFeedback] = useState('');
+  const [load, setLoad] = useState(false);
+  const handlesubmit = async () => {
+    setLoad(true);
+    try {
+      if (feedback.trim() === '') {
+        Alert.alert('Please write feedback first');
+        return;
+      }
+      const id = await getData('id');
+      console.log(id);
+      const body = {
+        user_id: id,
+        review: feedback,
+        rating: defaultrating,
+      };
+      console.log(body);
+      const response = await axios.post(
+        'https://newannakadosa.com/api/send/feedback',
+        body,
+      );
+      console.log(response);
+      Snackbar.show({
+        text: 'Your Feedback has been sent😁',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_LONG,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      setFeedback('');
+      setdefaultrating(1);
+      navigation.replace('Main');
+    } catch (err) {
+      console.log('Error in submitting feedback', err);
+      Snackbar.show({
+        text: 'Error ,Your feedback has not been sent!😥',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_LONG,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      // Alert.alert( '  ');
+      setFeedback('');
+      setdefaultrating(1);
+      navigation.replace('Main');
+    } finally {
+      setLoad(false);
     }
-    Alert.alert('Thank you.', 'Your feedback has been noted!😀 ');
-    setFeedback('');
-    setdefaultrating(1);
-    navigation.replace('Main');
   };
+
+  if (load) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -33,8 +79,8 @@ const Feedback = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -116,12 +162,12 @@ const Feedback = ({navigation}) => {
           onPress={handlesubmit}
           style={{
             backgroundColor: 'green',
-            padding: 20,
+            padding: 15,
             alignSelf: 'center',
             borderRadius: 40,
             marginTop: 25,
           }}>
-          <Text style={{color: 'yellow', fontWeight: 'bold'}}>
+          <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
             Submit Feedback
           </Text>
         </TouchableOpacity>

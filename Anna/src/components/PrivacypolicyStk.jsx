@@ -10,8 +10,10 @@ import {
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
-
+import {useWindowDimensions} from 'react-native';
+import RenderHTML from 'react-native-render-html';
 const Privacy = ({navigation}) => {
+  const {width} = useWindowDimensions();
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState('');
   useEffect(() => {
@@ -22,7 +24,7 @@ const Privacy = ({navigation}) => {
     setLoad(true);
     try {
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/privacy/policy',
+        'https://newannakadosa.com/api/privacy/policy',
       );
 
       // Assuming the API returns a JSON object
@@ -51,8 +53,8 @@ const Privacy = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -68,19 +70,13 @@ const Privacy = ({navigation}) => {
           Privacy Policy
         </Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
-        <View>
-          <Text
-            style={{
-              fontSize: 16,
-              color: 'gray',
-
-              marginBottom: 20,
-            }}>
-            {/* Eget nulla adipiscing nullam enim nec, magna. Vel lobortis feugiat
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
+        <View style={{marginTop: 20}}>
+          {/* Eget nulla adipiscing nullam enim nec, magna. Vel lobortis feugiat
             parturient arcu sit tincidunt lacus. */}
-            {details}
-          </Text>
+          <RenderHTML contentWidth={width} source={{html: details}} />
         </View>
         {/* <View>
           <Text

@@ -18,8 +18,8 @@ const Settings = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -107,7 +107,7 @@ const Settings = ({navigation}) => {
             </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('ManageAddress')}
+            onPress={() => navigation.navigate('Address')}
             style={{
               flexDirection: 'row',
               borderBottomColor: 'lightgray',
@@ -115,8 +115,7 @@ const Settings = ({navigation}) => {
               marginVertical: 10,
               paddingBottom: 10,
             }}>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('ManageAddress')}>
+            <TouchableOpacity onPress={() => navigation.navigate('Address')}>
               <Image
                 source={require('../assets/iconsassets/location.png')}
                 style={{
@@ -137,7 +136,7 @@ const Settings = ({navigation}) => {
               Manage Address
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('ManageAddress')}
+              onPress={() => navigation.navigate('Address')}
               style={{borderRadius: 40, overflow: 'hidden'}}
               //</View>onPress={() => navigation.navigate('SignIn')}
             >
@@ -158,10 +157,11 @@ const Settings = ({navigation}) => {
             style={{
               flexDirection: 'row',
               borderBottomColor: 'lightgray',
-              borderBottomWidth: 0.5,
-              marginVertical: 10,
-              paddingBottom: 10,
-              marginBottom: 10,
+              //borderBottomWidth: 0.5,
+              //marginVertical: 10,
+              //paddingBottom: 10,
+              marginTop: 10,
+              marginBottom: 5,
             }}>
             <TouchableOpacity onPress={() => navigation.navigate('Trackorder')}>
               <Image

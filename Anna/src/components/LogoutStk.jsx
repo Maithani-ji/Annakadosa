@@ -25,8 +25,8 @@ const Logout = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -67,7 +67,7 @@ const Logout = ({navigation}) => {
             style={{
               flexDirection: 'column',
               fontSize: 15,
-              //ontWeight: 'bold',
+              //fontWeight: 'bold',
               //color: 'black',
               //marginLeft: 40,
               marginTop: 15,
@@ -85,25 +85,35 @@ const Logout = ({navigation}) => {
             <TouchableOpacity
               onPress={() => navigation.navigate('Main')}
               style={{
-                paddingHorizontal: 40,
-                paddingVertical: 20,
-                borderRadius: 20,
+                paddingHorizontal: 17,
+                paddingVertical: 10,
+                borderRadius: 40,
                 //borderWidth: 1,
                 backgroundColor: 'green',
               }}>
-              <Text style={{color: 'white'}}>Cancel</Text>
+              <Text style={{fontWeight: 'bold', fontSize: 16, color: 'white'}}>
+                Cancel
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               onPress={() => handlelogout()}
               style={{
-                paddingHorizontal: 40,
-                paddingVertical: 20,
-                borderRadius: 20,
+                paddingHorizontal: 17,
+                paddingVertical: 10,
+                borderRadius: 40,
                 // borderWidth: 1,
 
                 backgroundColor: 'red',
               }}>
-              <Text style={{textAlign: 'center', color: 'white'}}>Log Out</Text>
+              <Text
+                style={{
+                  fontSize: 16,
+                  textAlign: 'center',
+                  color: 'white',
+                  fontWeight: 'bold',
+                }}>
+                Log Out
+              </Text>
             </TouchableOpacity>
           </View>
         </View>

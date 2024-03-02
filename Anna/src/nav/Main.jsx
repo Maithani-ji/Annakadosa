@@ -37,6 +37,7 @@ import Addaddress from '../components/AddaddressStk';
 import Menuproducts from '../components/MenuprodcutsStk';
 import Productinfo from '../components/Productinfo';
 import Intro from '../screens/IntroAuthScreens/Intro';
+import Notifications from '../screens/MainScreen/Notifications';
 
 const Stack = createNativeStackNavigator();
 const Main = () => {
@@ -102,6 +103,11 @@ const Main = () => {
       <Stack.Screen
         name="OrderHistory"
         component={Orderhistory}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="Notifications"
+        component={Notifications}
         options={{headerShown: false}}
       />
       <Stack.Screen

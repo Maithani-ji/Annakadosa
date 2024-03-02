@@ -2,6 +2,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Linking,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -27,25 +28,26 @@ const Home = ({navigation}) => {
   const [recomended, setRecommended] = useState([]);
   const [searchtext, setSearchtext] = useState('');
   const [searchdata, setSearchdata] = useState([]);
-
+  const [banner, setBanner] = useState();
   useEffect(() => {
     fetchImagesFromApi();
     fetchData();
     fetchBestseller();
     fetchrecommended();
+    fetchBanner();
   }, []);
   const fetchImagesFromApi = async () => {
     setLoad(true);
     try {
       const response = await axios.get(
         //'https://dummyjson.com/products',
-        'https://techiedom.com/annakadosa/api/slider/image',
+        'https://newannakadosa.com/api/slider/image',
       ); // Replace with your API endpoint
       //console.log('image response', response);
-      setApiImages(response.data.data); // Assuming the API returns an array of image URLs
+      setApiImages(response?.data?.data); // Assuming the API returns an array of image URLs
     } catch (error) {
       // console.error('Error fetching images from API:', error);
-      Alert.alert('Error', 'Failed to fetch images from the API.');
+      Alert.alert('Error', 'Failed to fetch slider images  from the API.');
     } finally {
       setLoad(false);
     }
@@ -62,14 +64,17 @@ const Home = ({navigation}) => {
       // setProducts(productsResponse.data.data);
       // console.log(productsResponse.data.data);
       const categoriesResponse = await axios.get(
-        'https://techiedom.com/annakadosa/api/categories',
+        'https://newannakadosa.com/api/categories',
       );
-      setCategories(categoriesResponse.data.data);
+      setCategories(categoriesResponse?.data?.data);
       setLoad(false);
     } catch (error) {
       setLoad(false);
       //console.error('API error:', error);
-      Alert.alert('Error', 'Failed to fetch data. Please try again.');
+      Alert.alert(
+        'Error',
+        'Failed to fetch categories data. Please try again.',
+      );
     }
   };
   const fetchBestseller = async () => {
@@ -81,15 +86,18 @@ const Home = ({navigation}) => {
       //  setBestseller(productsResponse.data.data);
       //  console.log(productsResponse.data.data);
       const bestsellerResponse = await axios.get(
-        'https://techiedom.com/annakadosa/api/best/seller',
+        'https://newannakadosa.com/api/best/seller',
       );
       // console.log('responsebestseller', bestsellerResponse.data);
-      setBestseller(bestsellerResponse.data.data);
+      setBestseller(bestsellerResponse?.data?.data);
       setLoad(false);
     } catch (error) {
       setLoad(false);
       //console.error(' best seller API error:', error);
-      Alert.alert('Error', 'Failed to fetch data. Please try again.');
+      Alert.alert(
+        'Error',
+        'Failed to fetch best seller data. Please try again.',
+      );
     }
   };
   const fetchrecommended = async () => {
@@ -101,17 +109,33 @@ const Home = ({navigation}) => {
       // setrecommended(productsResponse.data.data);
       // console.log(productsResponse.data.data);
       const recommendedResponse = await axios.get(
-        'https://techiedom.com/annakadosa/api/recommanded/product',
+        'https://newannakadosa.com/api/recommanded/product',
       );
-      setRecommended(recommendedResponse.data.data);
+      setRecommended(recommendedResponse?.data?.data);
       setLoad(false);
     } catch (error) {
       setLoad(false);
       // console.error(' recommended API error:', error);
-      Alert.alert('Error', 'Failed to fetch data. Please try again.');
+      Alert.alert('Error', 'Failed to fetch recommend data. Please try again.');
     }
   };
+  const fetchBanner = async () => {
+    setLoad(true);
+    try {
+      //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
 
+      const response = await axios.get(
+        'https://newannakadosa.com/api/offered/product',
+      );
+      //console.log(response.data.data);
+      setBanner(response?.data?.data);
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      console.error('Error fetching banner data:', error);
+      // setError('An error occurred while fetching data.');
+    }
+  };
   const handleSearch = async () => {
     setLoad(true);
     try {
@@ -121,7 +145,7 @@ const Home = ({navigation}) => {
       }
       setSearch(true);
 
-      const apiUrl = 'https://techiedom.com/annakadosa/api/search'; // Replace with your API endpoint
+      const apiUrl = 'https://newannakadosa.com/api/search'; // Replace with your API endpoint
 
       const requestBody = {
         category_id: '',
@@ -131,7 +155,7 @@ const Home = ({navigation}) => {
       const response = await axios.post(apiUrl, requestBody);
 
       // Handle the response
-      //console.log('API Response:', response.data.data);
+      console.log('API Response:', response.data.data);
       setSearchdata(response.data.data);
       // Further processing based on the response
     } catch (error) {
@@ -159,7 +183,7 @@ const Home = ({navigation}) => {
       <View
         style={{
           backgroundColor: '#fed920',
-          padding: 8,
+          padding: 10,
           flexDirection: 'row',
           // paddingHorizontal: 15,
         }}>
@@ -181,25 +205,17 @@ const Home = ({navigation}) => {
             marginLeft: 10,
             marginBottom: -10,
           }}>
-          <Image
-            source={require('../../assets/iconsassets/Annad.png')}
-            style={{
-              width: 35,
-              height: 35,
-              marginTop: 5,
-            }}
-          />
           <Text
             style={{
               flex: 1,
-              fontSize: 25,
+              fontSize: 22,
               fontWeight: 'bold',
               color: 'green',
               marginLeft: 10,
               textAlignVertical: 'center',
               marginTop: -7,
             }}>
-            Anna Ka Dosa
+            New Anna Ka Dosa
           </Text>
         </View>
 
@@ -216,41 +232,45 @@ const Home = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            borderRadius: 20,
+            borderRadius: 15,
             borderWidth: 1,
             borderColor: 'lightgray',
-            padding: 10,
-            marginBottom: 30,
+            paddingHorizontal: 5,
+            // paddingVertical: 2,
+            marginVertical: 20,
           }}>
           <TextInput
             style={{
-              fontSize: 18,
+              fontSize: 16,
               color: 'black',
             }}
+            placeholderTextColor={'gray'}
             placeholder="Search for Dosa or more"
             //editable={false}
             onChangeText={setSearchtext}
             value={searchtext}
             onSubmitEditing={handleSearch}
           />
-          <View style={{margin: 7}}>
+          <View style={{margin: 5, marginTop: 10}}>
             {!search ? (
               <TouchableOpacity onPress={handleSearch}>
                 <Image
                   source={require('../../assets/iconsassets/Search.png')}
-                  style={{height: 30, width: 30}}
+                  style={{height: 25, width: 25}}
                 />
               </TouchableOpacity>
             ) : (
               <TouchableOpacity onPress={handleRemovesearch}>
                 <Image
                   source={require('../../assets/iconsassets/Cross.png')}
-                  style={{height: 30, width: 30}}
+                  style={{height: 25, width: 25}}
                 />
               </TouchableOpacity>
             )}
@@ -261,8 +281,8 @@ const Home = ({navigation}) => {
           <View>
             <View style={{borderRadius: 20, overflow: 'hidden'}}>
               <SliderBox
-                images={img.slice(0, 4)}
-                sliderBoxHeight={200}
+                images={img}
+                sliderBoxHeight={180}
                 dotColor="#00a954"
                 autoplay={true}
                 imageLoadingColor={'#00a954'}
@@ -301,7 +321,7 @@ const Home = ({navigation}) => {
               }}>
               <Text
                 style={{
-                  fontSize: 27,
+                  fontSize: 25,
                   fontWeight: 'bold',
                   color: 'black',
                 }}>
@@ -314,7 +334,7 @@ const Home = ({navigation}) => {
                     //fontSize: 27,
                     fontWeight: 'bold',
                     //color: 'black',
-                    marginTop: 10,
+                    marginTop: 8,
                     textAlignVertical: 'center',
                   }}>
                   View all
@@ -336,62 +356,45 @@ const Home = ({navigation}) => {
                 )}
               />
             </View>
-            <View
-              style={{
-                borderRadius: 30,
-                overflow: 'hidden',
-                position: 'relative',
-              }}>
-              <Image
-                source={require('../../assets/iconsassets/home-order-now.gif')}
-                style={{height: 200, width: '100%'}}
-              />
+            {banner && (
               <View
                 style={{
-                  flex: 1,
-                  position: 'absolute',
-                  alignSelf: 'center',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  padding: 12,
+                  borderRadius: 30,
+                  overflow: 'hidden',
+                  position: 'relative',
                 }}>
-                <Text
+                <Image
+                  source={{uri: banner?.image}}
+                  style={{height: 200, width: '100%'}}
+                />
+                <View
                   style={{
-                    //flex: 1,
-                    fontSize: 26,
-                    fontWeight: 'bold',
-                    color: 'green',
-                    //marginLeft: 10,
-                    textAlign: 'center',
-                    marginTop: 10,
-                  }}>
-                  DOSA STARTING @49 EACH
-                </Text>
-                <Text
-                  style={{
-                    //flex: 1,
-                    //fontSize: 27,
-                    fontWeight: 'bold',
-                    //color: 'green',
-                    //marginLeft: 10,
-                    textAlign: 'center',
-                    marginTop: 10,
-                  }}>
-                  * any 2 regular & medium dosa
-                </Text>
-                <TouchableOpacity
-                  style={{
-                    backgroundColor: 'black',
-                    borderRadius: 20,
+                    flex: 1,
+                    position: 'absolute',
+                    alignSelf: 'center',
+                    justifyContent: 'center',
+                    alignItems: 'center',
                     padding: 10,
-                    marginTop: 20,
-                    // position: 'absolute',
-                    // bottom: 0,
                   }}>
-                  <Text style={{color: 'yellow'}}>Order Now</Text>
-                </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() =>
+                      navigation.navigate('Searchmenu', {
+                        id: banner.category_id,
+                      })
+                    }
+                    style={{
+                      backgroundColor: 'black',
+                      borderRadius: 20,
+                      padding: 10,
+                      marginTop: 140,
+                      // position: 'relative',
+                      // bottom: 10,
+                    }}>
+                    <Text style={{color: 'yellow'}}>Order Now</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
-            </View>
+            )}
             <View
               style={{
                 // flexDirection: 'row',
@@ -401,7 +404,7 @@ const Home = ({navigation}) => {
               <Text
                 style={{
                   //flex: 1,
-                  fontSize: 27,
+                  fontSize: 25,
                   fontWeight: 'bold',
                   color: 'black',
                   //marginLeft: 10,
@@ -434,28 +437,60 @@ const Home = ({navigation}) => {
                   style={{
                     marginTop: 5,
                     color: 'gray',
-
-                    fontWeight: 'bold',
+                    fontSize: 12,
+                    // fontWeight: 'bold',
                   }}>
                   Shop 2,Krishna Market,Near Deshbandhu College,Kalkaji,New
                   Delhi,Delhi 110019
                 </Text>
                 <TouchableOpacity
+                  onPress={() =>
+                    Linking.openURL(
+                      'https://www.google.com/maps/place/Anna+Ka+Dosa/@28.5416316,77.252753,17z/data=!4m14!1m7!3m6!1s0x390ce3df117f72cd:0x6b95acd2e657f07e!2sAnna+Ka+Dosa!8m2!3d28.5416316!4d77.2553387!16s%2Fg%2F11b8jcvc05!3m5!1s0x390ce3df117f72cd:0x6b95acd2e657f07e!8m2!3d28.5416316!4d77.2553387!16s%2Fg%2F11b8jcvc05?entry=ttu',
+                    )
+                  }
                   style={{
-                    marginVertical: 10,
+                    marginTop: 10,
                     // borderBottomColor: 'red',
                     // borderBottomWidth: 0.5,
                   }}>
-                  <Text
-                    style={{
-                      color: 'red',
-                      //fontWeight: 'bold'
-                      textDecorationLine: 'underline',
-                    }}>
-                    View Restaurant
-                  </Text>
+                  <View style={{flexDirection: 'row', gap: 2.5}}>
+                    <Text
+                      style={{
+                        color: 'red',
+                        //fontWeight: 'bold'
+                        textDecorationLine: 'underline',
+                        fontSize: 13,
+                      }}>
+                      View Restaurant
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'red',
+                        //fontWeight: 'bold'
+                        //textDecorationLine: 'underline',
+                        fontSize: 13,
+                      }}>
+                      &
+                    </Text>
+                    <Text
+                      style={{
+                        color: 'red',
+                        //fontWeight: 'bold'
+                        textDecorationLine: 'underline',
+                        fontSize: 13,
+                      }}>
+                      Reviews
+                    </Text>
+                  </View>
                 </TouchableOpacity>
-                <TouchableOpacity style={{marginBottom: 5}}>
+                {/* <TouchableOpacity
+                  style={{marginTop: -5}}
+                  onPress={() =>
+                    Linking.openURL(
+                      'https://www.google.com/maps/place/Anna+Ka+Dosa/@28.5416316,77.252753,17z/data=!4m16!1m7!3m6!1s0x390ce3df117f72cd:0x6b95acd2e657f07e!2sAnna+Ka+Dosa!8m2!3d28.5416316!4d77.2553387!16s%2Fg%2F11b8jcvc05!3m7!1s0x390ce3df117f72cd:0x6b95acd2e657f07e!8m2!3d28.5416316!4d77.2553387!9m1!1b1!16s%2Fg%2F11b8jcvc05?entry=ttu',
+                    )
+                  }>
                   <Text
                     style={{
                       color: 'red',
@@ -464,7 +499,7 @@ const Home = ({navigation}) => {
                     }}>
                     Reviews
                   </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
               </View>
               <View>
                 <Image
@@ -482,7 +517,7 @@ const Home = ({navigation}) => {
               <Text
                 style={{
                   //flex: 1,
-                  fontSize: 27,
+                  fontSize: 25,
                   fontWeight: 'bold',
                   color: 'black',
                   //marginLeft: 10,
@@ -516,7 +551,7 @@ const Home = ({navigation}) => {
               <Text
                 style={{
                   //flex: 1,
-                  fontSize: 27,
+                  fontSize: 25,
                   fontWeight: 'bold',
                   color: 'black',
                   //marginLeft: 10,
@@ -545,7 +580,7 @@ const Home = ({navigation}) => {
             <Text
               style={{
                 //flex: 1,
-                fontSize: 27,
+                fontSize: 25,
                 fontWeight: 'bold',
                 color: 'black',
                 //marginLeft: 10,
@@ -553,15 +588,31 @@ const Home = ({navigation}) => {
               }}>
               Searched Items
             </Text>
-
-            <FlatList
-              scrollEnabled={false}
-              data={searchdata}
-              keyExtractor={item => item.id}
-              renderItem={({item}) => (
-                <RenderCategoryItem item={item} navigation={navigation} />
-              )}
-            />
+            {searchdata.length > 0 ? (
+              <FlatList
+                scrollEnabled={false}
+                data={searchdata}
+                keyExtractor={item => item.id}
+                renderItem={({item}) => (
+                  <RenderCategoryItem item={item} navigation={navigation} />
+                )}
+              />
+            ) : (
+              <View>
+                <Text
+                  style={{
+                    //flex: 1,
+                    fontSize: 22,
+                    marginTop: 50,
+                    //fontWeight: 'bold',
+                    color: 'black',
+                    //marginLeft: 10,
+                    textAlign: 'center',
+                  }}>
+                  Items not found.
+                </Text>
+              </View>
+            )}
           </View>
         )}
       </ScrollView>

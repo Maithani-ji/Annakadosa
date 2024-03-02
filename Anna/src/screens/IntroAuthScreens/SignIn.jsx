@@ -10,14 +10,30 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Loading from '../../loadingcomponent/loading';
 import {getData, storeData} from '../../utils/AsyncStorag';
 import {useLogin} from '../../utils/LoginproviderContext';
 import Snackbar from 'react-native-snackbar';
-
+import messaging from '@react-native-firebase/messaging';
 const SignIn = ({navigation}) => {
+  const [deviceToken, setDeviceToken] = useState(null);
+  useEffect(() => {
+    getDeviceToken();
+  }, []);
+  //console.log(deviceToken);
+  //serverkey AAAAs0jTPBU:APA91bGft03RZLJeDRv8nXem1z2hSLXDXCEFAcD1o09Pyw5L3YZYFGEoMB1JwCF1IcOnBBlf5CigSPeBMxNL9Kocfx3R7mpSkccsCdBVitPFGJdo6DxvcZS2Jze5uQ58-3kgC0g-RzO0
+  //device id ebuXDP1MQLCeiOW0Fv5Huv:APA91bGiJXU65laQVEDLL3tE4yt7fuLxb_WTJKNVoZUr4V-UWZf0PmszXswPVlmV-ZAGBPDEiMfkjPopALwTdS9xTlzaMAs6jQTO0OIYSysY6-jeNIS4VqKfxdL5DR1PWU9SEm0fjb4k
+  const getDeviceToken = async () => {
+    try {
+      const token = await messaging().getToken();
+      setDeviceToken(token);
+      console.log('Device token', token);
+    } catch (error) {
+      console.error('Error getting device token:', error);
+    }
+  };
   const [number, setnumber] = useState('');
   const [load, setload] = useState(false);
   const {setIsLoggedin} = useLogin();
@@ -28,14 +44,15 @@ const SignIn = ({navigation}) => {
       if (number.length === 10) {
         const body = {
           phone: number,
-          device_id: 'regdf4rt544g4hguyfytg220011',
+          device_id: deviceToken,
           platform: 'App',
         };
+        console.log('body', body);
         const response = await axios.post(
-          'https://techiedom.com/annakadosa/api/user/loggedin',
+          'https://newannakadosa.com/api/user/loggedin',
           body,
         );
-
+        console.log('sign in API response :', response.data.data);
         console.log('API response id:', response.data.data.id);
         await storeData('uid', response.data.data.id);
         navigation.replace('Verify', {data: response.data.data});
@@ -144,12 +161,14 @@ const SignIn = ({navigation}) => {
             onPress={handleSignIn}
             style={{
               backgroundColor: 'green',
-              padding: 20,
+              padding: 15,
               alignSelf: 'center',
               borderRadius: 40,
               marginTop: 40,
             }}>
-            <Text style={{color: 'yellow', fontWeight: 'bold'}}>Send OTP</Text>
+            <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
+              Send OTP
+            </Text>
           </TouchableOpacity>
         </View>
       </ImageBackground>

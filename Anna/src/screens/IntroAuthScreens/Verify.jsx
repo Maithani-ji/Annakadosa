@@ -12,8 +12,9 @@ import {
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
 import Loading from '../../loadingcomponent/loading';
-import {getData} from '../../utils/AsyncStorag';
+import {getData, storeData} from '../../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
+import {useLogin} from '../../utils/LoginproviderContext';
 
 const Verify = ({navigation, route}) => {
   const {data} = route.params;
@@ -27,6 +28,7 @@ const Verify = ({navigation, route}) => {
   const [pin4, setPin4] = useState('');
   const [seconds, setSeconds] = useState(60);
   const [load, setload] = useState(false);
+  const {setIsLoggedin} = useLogin();
   useEffect(() => {
     const interval = setInterval(() => {
       if (seconds > 0) {
@@ -47,7 +49,7 @@ const Verify = ({navigation, route}) => {
         // const otp = pin1 + pin2 + pin3 + pin4;
         const id = await getData('uid');
         const requestBody = {
-          id: 131,
+          user_id: id,
           otp_digit_one: pin1,
           otp_digit_two: pin2,
           otp_digit_three: pin3,
@@ -55,7 +57,7 @@ const Verify = ({navigation, route}) => {
         };
         console.log(requestBody);
         const response = await axios.post(
-          'https://techiedom.com/annakadosa/api/otp/confirm/',
+          'https://newannakadosa.com/api/otp/confirm/',
           requestBody,
         );
         if (response.data.status === 'danger') {
@@ -71,9 +73,21 @@ const Verify = ({navigation, route}) => {
           setload(false);
           return;
         } else {
+          // if (!!data?.name && !!data?.email) {
+          //   await storeData('id', data?.id);
+          //   setIsLoggedin(true);
+          //   Snackbar.show({
+          //     text: 'Loggedin Successfully.',
+          //     textColor: 'white',
+          //     backgroundColor: 'green',
+          //     duration: Snackbar.LENGTH_SHORT,
+          //     marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+          //   });
+          // } else {
           console.log('response', response.data.message);
           navigation.replace('Signup');
           setload(false);
+          // }
         }
       } else {
         setload(false);
@@ -106,7 +120,7 @@ const Verify = ({navigation, route}) => {
           style={{marginLeft: 25, marginTop: 30}}>
           <Image
             source={require('../../assets/iconsassets/left-arrow.png')}
-            style={{width: 35, height: 35}}
+            style={{width: 30, height: 30}}
           />
         </TouchableOpacity>
         <View
@@ -166,6 +180,7 @@ const Verify = ({navigation, route}) => {
                   textAlign: 'center',
                   backgroundColor: 'white',
                   borderColor: 'white',
+                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -189,6 +204,7 @@ const Verify = ({navigation, route}) => {
                   textAlign: 'center',
                   backgroundColor: 'white',
                   borderColor: 'white',
+                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -212,6 +228,7 @@ const Verify = ({navigation, route}) => {
                   textAlign: 'center',
                   backgroundColor: 'white',
                   borderColor: 'white',
+                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -235,6 +252,7 @@ const Verify = ({navigation, route}) => {
                   textAlign: 'center',
                   backgroundColor: 'white',
                   borderColor: 'white',
+                  textDecorationColor: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -246,12 +264,12 @@ const Verify = ({navigation, route}) => {
               onPress={handleVerification}
               style={{
                 backgroundColor: 'green',
-                padding: 20,
+                padding: 15,
                 alignSelf: 'center',
                 borderRadius: 40,
                 marginTop: 40,
               }}>
-              <Text style={{color: 'yellow', fontWeight: 'bold'}}>
+              <Text style={{fontSize: 16, color: 'yellow', fontWeight: 'bold'}}>
                 Continue
               </Text>
             </TouchableOpacity>

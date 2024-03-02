@@ -61,7 +61,7 @@ const Menu = ({navigation}) => {
     setLoad(true);
     try {
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/slider/image',
+        'https://newannakadosa.com/api/slider/image',
       ); // Replace with your API endpoint
       // console.log('image response', response.data.data);
       setApiImages(response.data.data); // Assuming the API returns an array of image URLs
@@ -73,12 +73,12 @@ const Menu = ({navigation}) => {
     }
   };
   const img = apiImages?.map(item => item.image);
-  //img && console.log('images', img);
+  img && console.log('images', img);
   const fetchData = async () => {
     setLoad(true);
     try {
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/categories',
+        'https://newannakadosa.com/api/categories',
       );
       // console.log(response.data.data);
       setCategories(response.data.data); // Assuming the API response is an array of category objects
@@ -139,7 +139,7 @@ const Menu = ({navigation}) => {
       <View
         style={{
           backgroundColor: '#fed920',
-          padding: 8,
+          padding: 10,
           flexDirection: 'row',
 
           // paddingHorizontal: 15,
@@ -148,9 +148,9 @@ const Menu = ({navigation}) => {
           <Image
             source={require('../../assets/iconsassets/menu.png')}
             style={{
-              width: 25,
-              height: 25,
-              marginTop: 5,
+              width: 26,
+              height: 26,
+              marginTop: 7,
             }}
           />
         </TouchableOpacity>
@@ -165,14 +165,14 @@ const Menu = ({navigation}) => {
           <Text
             style={{
               //flex: 1,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 'bold',
               color: 'green',
               marginLeft: 10,
               textAlignVertical: 'center',
               marginBottom: -6,
             }}>
-            Alps Court,Delhi 110045
+            Kalkaji Extn,Kalkaji,Delhi 110045
           </Text>
         </View>
         <TouchableOpacity
@@ -188,9 +188,12 @@ const Menu = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
         <View
           style={{
+            marginTop: 20,
             flexDirection: 'row',
             //justifyContent: 'space-between',
             borderRadius: 20,
@@ -210,28 +213,38 @@ const Menu = ({navigation}) => {
                   height: 25,
                   tintColor: 'gray',
                   marginLeft: -5,
+                  marginTop: 10,
                 }}
               />
-              <Text
-                style={{
-                  marginTop: 5,
-                  color: 'gray',
-
-                  fontWeight: 'bold',
-                }}>
-                Alps Court,Dallas
-              </Text>
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    marginTop: 5,
+                    color: 'gray',
+                    fontSize: 12,
+                    // fontWeight: 'bold',
+                  }}>
+                  Shop 2,Krishna Market,Near Deshbandhu College,Kalkaji,New
+                  Delhi,Delhi 110019
+                </Text>
+              </View>
             </View>
             <View
               style={{flexDirection: 'row', justifyContent: 'space-between'}}>
               <TouchableOpacity
+                onPress={() =>
+                  Linking.openURL(
+                    'https://www.google.com/maps/dir//Shop+No.+2,+Anna+Ka+Dosa,+near+Deshbandhu+College,+University+of+Delhi,+Krishna+Market,+Kalkaji+Extension,+Kalkaji,+New+Delhi,+Delhi+110019/@28.5416316,77.252753,17z/data=!4m8!4m7!1m0!1m5!1m1!1s0x390ce3df117f72cd:0x6b95acd2e657f07e!2m2!1d77.2553387!2d28.5416316?entry=ttu',
+                  )
+                }
                 style={{
-                  marginVertical: 10,
+                  marginTop: 10,
                   // borderBottomColor: 'red',
                   // borderBottomWidth: 0.5,
                 }}>
                 <Text
                   style={{
+                    fontSize: 13,
                     color: 'red',
                     //fontWeight: 'bold'
                     textDecorationLine: 'underline',
@@ -240,15 +253,15 @@ const Menu = ({navigation}) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => Linking.openURL('tel:9999888777')}>
+                onPress={() => Linking.openURL('tel:07042200132')}>
                 <Image
                   source={require('../../assets/iconsassets/call.png')}
                   style={{
-                    width: 25,
-                    height: 25,
+                    width: 20,
+                    height: 20,
                     tintColor: 'red',
                     marginRight: 25,
-                    marginTop: 5,
+                    marginTop: 8,
                   }}
                 />
               </TouchableOpacity>
@@ -272,7 +285,7 @@ const Menu = ({navigation}) => {
           <Text
             style={{
               //flex: 1,
-              fontSize: 27,
+              fontSize: 25,
               fontWeight: 'bold',
               color: 'black',
               //marginLeft: 10,
@@ -300,8 +313,8 @@ const Menu = ({navigation}) => {
 
         <View style={{marginBottom: 20, borderRadius: 20, overflow: 'hidden'}}>
           <SliderBox
-            images={img.slice(0, 4)}
-            sliderBoxHeight={200}
+            images={img}
+            sliderBoxHeight={180}
             dotColor="#00a954"
             autoplay={true}
             imageLoadingColor={'#00a954'}

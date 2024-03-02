@@ -9,13 +9,17 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import {useWindowDimensions} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
+import RenderHTML from 'react-native-render-html';
 const Productinfo = ({navigation, route}) => {
+  const {width} = useWindowDimensions();
   const {item} = route.params;
+  console.log(item);
   const [load, setLoad] = useState(false);
   const [Default, setDefault] = useState([]);
   const [Extra, setExtra] = useState([
@@ -58,65 +62,116 @@ const Productinfo = ({navigation, route}) => {
     setExtra(prevDefault => [...prevDefault, itemToRemove]);
   };
 
-  const updateQuantity = async newQuantity => {
+  // const updateQuantity = async newQuantity => {
+  //   try {
+  //     setLoad(true);
+  //     const apiUrl = 'https://techiedom.com/annakadosa/api/update/cart/';
+  //     const id = await getData('id');
+  //     console.log('prod info id', id);
+  //     const body = {
+  //       user_id: id,
+  //       product_id: item.id,
+  //       qty: newQuantity,
+  //     };
+  //     console.log('body', body);
+  //     const response = await axios.post(apiUrl, body);
+  //     console.log('updatecart', response.data);
+  //     if (response && response.data) {
+  //       setQuantity(newQuantity);
+  //       setLoad(false);
+  //       Snackbar.show({
+  //         text: 'Cart Updated Successfully',
+  //         textColor: 'white',
+  //         backgroundColor: 'green',
+  //         duration: Snackbar.LENGTH_SHORT,
+  //         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+  //       });
+  //       //Alert.alert('Success', 'Successfully cart updated');
+  //       console.log('Quantity updated successfully!');
+  //     } else {
+  //       setLoad(false);
+  //       Snackbar.show({
+  //         text: 'Failed To Update Cart ',
+  //         textColor: 'white',
+  //         backgroundColor: 'red',
+  //         duration: Snackbar.LENGTH_SHORT,
+  //         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+  //       });
+  //       console.error('Failed to update quantity.');
+  //     }
+  //   } catch (error) {
+  //     setLoad(false);
+  //     Snackbar.show({
+  //       text: 'Failed To Update Cart ',
+  //       textColor: 'white',
+  //       backgroundColor: 'red',
+  //       duration: Snackbar.LENGTH_SHORT,
+  //       marginBottom: 10, // Adjust this value to position the Snackbar at the desired distance from the top
+  //     });
+  //     console.error('Error updating quantity:', error);
+  //   }
+  // };
+  const onAddPress = async () => {
+    setLoad(true);
+    const id = await getData('id');
+    console.log('best seller uid', id);
     try {
-      setLoad(true);
-      const apiUrl = 'https://techiedom.com/annakadosa/api/update/cart/';
-      const id = await getData('id');
-      console.log('prod info id', id);
-      const body = {
+      const apiUrl = 'https://newannakadosa.com/api/store/cart/'; // Replace with your actual API endpoint
+      // const userId = id;
+
+      const response = await axios.post(apiUrl, {
         user_id: id,
-        product_id: item.id,
-        qty: newQuantity,
-      };
-      console.log('body', body);
-      const response = await axios.post(apiUrl, body);
-      console.log('updatecart', response.data);
+        product_id: item?.id,
+        qty: quantity,
+      });
+      console.log(response);
+      // If the request is successful, navigate or perform other actions
       if (response && response.data) {
-        setQuantity(newQuantity);
         setLoad(false);
         Snackbar.show({
-          text: 'Cart Updated Successfully',
+          text: 'Added in Cart Successfully',
           textColor: 'white',
           backgroundColor: 'green',
           duration: Snackbar.LENGTH_SHORT,
           marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
         });
-        //Alert.alert('Success', 'Successfully cart updated');
-        console.log('Quantity updated successfully!');
+        navigation.navigate('Cart');
+
+        // You can navigate or perform any other action here
       } else {
         setLoad(false);
+        // Alert.alert('Error', 'Error in adding product to cart');
         Snackbar.show({
-          text: 'Failed To Update Cart ',
+          text: 'Failed in adding product to cart ',
           textColor: 'white',
           backgroundColor: 'red',
           duration: Snackbar.LENGTH_SHORT,
           marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
         });
-        console.error('Failed to update quantity.');
+        console.error('Failed to add product to cart.');
       }
     } catch (error) {
       setLoad(false);
       Snackbar.show({
-        text: 'Failed To Update Cart ',
+        text: 'Failed in adding product to cart ',
         textColor: 'white',
         backgroundColor: 'red',
         duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 10, // Adjust this value to position the Snackbar at the desired distance from the top
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
       });
-      console.error('Error updating quantity:', error);
+      console.error('Error adding product to cart:', error);
     }
   };
 
   const incrementQuantity = () => {
     const newQuantity = quantity + 1;
-    updateQuantity(newQuantity);
+    setQuantity(newQuantity);
   };
 
   const decrementQuantity = () => {
     if (quantity > 1) {
       const newQuantity = quantity - 1;
-      updateQuantity(newQuantity);
+      setQuantity(newQuantity);
     }
   };
   if (load) {
@@ -130,8 +185,8 @@ const Productinfo = ({navigation, route}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -184,21 +239,38 @@ const Productinfo = ({navigation, route}) => {
           </Text>
         </View>
         <View style={{marginHorizontal: 20}}>
-          <Text
+          {/* <Text
             style={{
               fontSize: 15,
               marginBottom: 10,
             }}
             numberOfLines={showFullDescription ? undefined : 3}>
             {item.long_description}
-          </Text>
-          <TouchableOpacity
+          </Text> */}
+          {/* <View> */}
+          {/* <Text
+            style={{
+              fontSize: 15,
+              marginBottom: 10,
+              flex: 1,
+            }}
+            //  numberOfLines={showFullDescription && undefined}
+          > */}
+          {item?.long_description && (
+            <RenderHTML
+              contentWidth={width}
+              source={{html: item?.long_description}}
+            />
+          )}
+          {/* </Text> */}
+          {/* </View> */}
+          {/* <TouchableOpacity
             onPress={toggleDescription}
             style={{alignItems: 'flex-end'}}>
             <Text style={{color: 'red', textDecorationLine: 'underline'}}>
               {showFullDescription ? 'Read Less' : 'Read More'}
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
         <View style={{marginHorizontal: 20, flexDirection: 'row', gap: 2}}>
           {Array.from({length: roundedRating}, (_, index) => (
@@ -357,7 +429,7 @@ const Productinfo = ({navigation, route}) => {
           }}>
           <View
             style={{
-              marginTop: 10,
+              marginTop: 7,
               flexDirection: 'row',
               justifyContent: 'space-between',
               gap: 10,
@@ -365,7 +437,7 @@ const Productinfo = ({navigation, route}) => {
             <View>
               <Text
                 style={{
-                  //   marginTop: 10,
+                  marginTop: 1,
                   fontSize: 19,
                   fontWeight: 'bold',
                   color: 'red',
@@ -377,7 +449,7 @@ const Productinfo = ({navigation, route}) => {
             <View>
               <Text
                 style={{
-                  //   marginTop: 10,
+                  marginTop: 2,
                   fontSize: 19,
                   fontWeight: 'bold',
                   color: 'black',
@@ -403,7 +475,7 @@ const Productinfo = ({navigation, route}) => {
             <View>
               <Text
                 style={{
-                  // marginTop: 10,
+                  marginTop: 2,
                   fontSize: 19,
                   fontWeight: 'bold',
                   color: 'black',
@@ -426,23 +498,24 @@ const Productinfo = ({navigation, route}) => {
           </View>
           {select ? (
             <TouchableOpacity
-              onPress={() => navigation.navigate('Cart')}
+              onPress={onAddPress}
               style={{
                 //flex: 1,
                 // marginVertical: 30,
                 // alignSelf: 'center',
+                marginTop: 1,
                 backgroundColor: 'green',
                 borderRadius: 40,
                 padding: 10,
               }}>
               <Text
                 style={{
-                  fontSize: 19,
+                  fontSize: 15,
                   fontWeight: 'bold',
                   color: 'yellow',
                   textAlign: 'center',
                 }}>
-                View Cart
+                Add to Cart
               </Text>
             </TouchableOpacity>
           ) : null}

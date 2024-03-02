@@ -27,7 +27,7 @@ const Offeritem = ({navigation}) => {
       //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
 
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/offer/product',
+        'https://newannakadosa.com/api/offer/product',
       );
       //console.log(response.data.data);
       setProducts(response.data.data);
@@ -43,12 +43,11 @@ const Offeritem = ({navigation}) => {
     try {
       //const apiUrl = 'https://techiedom.com/annakadosa/api/products';
 
-      const response = await axios.post(
-        'https://techiedom.com/annakadosa/api/offer/product',
-        {category_id: 1},
+      const response = await axios.get(
+        'https://newannakadosa.com/api/offered/product',
       );
-      console.log(response.data.data[0].thumb_image);
-      setBanner(response.data.data[0]);
+      console.log(response.data.data);
+      setBanner(response.data.data);
       setLoad(false);
     } catch (error) {
       setLoad(false);
@@ -64,7 +63,7 @@ const Offeritem = ({navigation}) => {
       <View
         style={{
           backgroundColor: '#fed920',
-          padding: 8,
+          padding: 10,
           flexDirection: 'row',
 
           // paddingHorizontal: 15,
@@ -73,31 +72,27 @@ const Offeritem = ({navigation}) => {
           <Image
             source={require('../../assets/iconsassets/menu.png')}
             style={{
-              width: 25,
-              height: 25,
-              marginTop: 5,
+              width: 26,
+              height: 26,
+              marginTop: 7,
             }}
           />
         </TouchableOpacity>
         <View style={{flex: 1}}>
           <TouchableOpacity style={{flexDirection: 'row', marginLeft: 5}}>
             <Text> Outlet</Text>
-            {/* <Image
-              source={require('../../assets/iconsassets/dropdown.png')}
-              style={{height: 15, width: 15, marginTop: 3, marginLeft: 3}}
-            /> */}
           </TouchableOpacity>
           <Text
             style={{
               //flex: 1,
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: 'bold',
               color: 'green',
               marginLeft: 10,
               textAlignVertical: 'center',
               marginBottom: -6,
             }}>
-            Alps Court,Delhi 110045
+            Kalkaji Extn,Kalkaji,Delhi 110045
           </Text>
         </View>
         <TouchableOpacity
@@ -113,70 +108,59 @@ const Offeritem = ({navigation}) => {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView style={{margin: 20}} showsVerticalScrollIndicator={false}>
-        <View
-          style={{borderRadius: 30, overflow: 'hidden', position: 'relative'}}>
-          <Image
-            source={require('../../assets/iconsassets/home-order-now.gif')}
-            //source={{uri: banner?.thumb_image}}
-            style={{height: 200, width: '100%'}}
-          />
+      <ScrollView
+        style={{marginHorizontal: 20}}
+        showsVerticalScrollIndicator={false}>
+        {banner && (
           <View
             style={{
-              flex: 1,
-              position: 'absolute',
-              alignSelf: 'center',
-              justifyContent: 'center',
-              alignItems: 'center',
-              padding: 10,
+              marginVertical: 20,
+              borderRadius: 30,
+              overflow: 'hidden',
+              position: 'relative',
             }}>
-            <Text
+            <Image
+              source={{uri: banner?.image}}
+              style={{height: 200, width: '100%'}}
+            />
+            <View
               style={{
-                //flex: 1,
-                fontSize: 26,
-                fontWeight: 'bold',
-                color: 'green',
-                //marginLeft: 10,
-                textAlign: 'center',
-                marginTop: 10,
-              }}>
-              PIZZA STARTING @49 EACH
-            </Text>
-            <Text
-              style={{
-                //flex: 1,
-                //fontSize: 27,
-                fontWeight: 'bold',
-                //color: 'green',
-                //marginLeft: 10,
-                textAlign: 'center',
-                marginTop: 10,
-              }}>
-              * any 2 regular & medium pizzas
-            </Text>
-            <TouchableOpacity
-              style={{
-                backgroundColor: 'black',
-                borderRadius: 20,
+                flex: 1,
+                position: 'absolute',
+                alignSelf: 'center',
+                justifyContent: 'center',
+                alignItems: 'center',
                 padding: 10,
-                marginTop: 20,
-                // position: 'absolute',
-                // bottom: 0,
               }}>
-              <Text style={{color: 'yellow'}}>Order Now</Text>
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() =>
+                  navigation.navigate('Searchmenu', {
+                    id: banner.category_id,
+                  })
+                }
+                style={{
+                  backgroundColor: 'black',
+                  borderRadius: 20,
+                  padding: 10,
+                  marginTop: 140,
+                  // position: 'relative',
+                  // bottom: 10,
+                }}>
+                <Text style={{color: 'yellow'}}>Order Now</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        )}
         <View>
           <Text
             style={{
               //flex: 1,
-              fontSize: 27,
+              fontSize: 25,
               fontWeight: 'bold',
               color: 'black',
               //marginLeft: 10,
               //textAlign: 'center',
-              marginTop: 30,
+              marginTop: 10,
             }}>
             Offer Items
           </Text>

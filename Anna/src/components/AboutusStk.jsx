@@ -19,8 +19,8 @@ const Aboutus = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -226,7 +226,11 @@ const Aboutus = ({navigation}) => {
             gap: 10,
           }}>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://www.facebook.com')}
+            onPress={() =>
+              Linking.openURL(
+                'https://www.facebook.com/p/Anna-Ka-Dosa-100054437383305/',
+              )
+            }
             style={{
               marginTop: 20,
               // elevation: 5, // Add elevation for Android shadow
@@ -263,13 +267,18 @@ const Aboutus = ({navigation}) => {
                   textAlign: 'center',
                   fontWeight: 'bold',
                   marginVertical: 10,
+                  color: 'black',
                 }}>
                 Follow us on Facebook
               </Text>
             </View>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => Linking.openURL('https://www.instagram.com')}
+            onPress={() =>
+              Linking.openURL(
+                'https://www.instagram.com/explore/locations/1621688231424912/anna-ka-dosa-corner-at-kalkaji/',
+              )
+            }
             style={{
               marginTop: 20,
               // elevation: 5, // Add elevation for Android shadow
@@ -305,6 +314,7 @@ const Aboutus = ({navigation}) => {
                   textAlign: 'center',
                   fontWeight: 'bold',
                   marginVertical: 10,
+                  color: 'black',
                 }}>
                 Follow us on Instagram
               </Text>

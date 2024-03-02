@@ -8,9 +8,132 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import Loading from '../loadingcomponent/loading';
+import axios from 'axios';
+import {getData, storeData} from '../utils/AsyncStorag';
+import Snackbar from 'react-native-snackbar';
 
 const Annaoffer = ({navigation}) => {
+  const [coupon, setcoupon] = useState('');
+  const [load, setLoad] = useState(false);
+  const [coupondata, setCoupondata] = useState(null);
+
+  useEffect(() => {
+    fetchCouponData();
+  }, []);
+  const fetchCouponData = async () => {
+    try {
+      setLoad(true);
+
+      const response = await axios.get(
+        'https://newannakadosa.com/api/coupon/list',
+      );
+
+      // Handle the response data here
+      console.log(response.data.data.length);
+      setCoupondata(response.data.data);
+    } catch (error) {
+      // Handle errors
+      console.error('Error making GET request:', error);
+    } finally {
+      setLoad(false);
+    }
+  };
+
+  const handleCoupon = async () => {
+    try {
+      setLoad(true);
+      if (coupon.trim() === '') {
+        fetchCouponData();
+
+        return;
+      }
+      const response = await axios.post(
+        'https://newannakadosa.com/api/coupon',
+        {coupon_code: coupon.toLowerCase()},
+      );
+
+      // Handle the response data here
+      console.log('search coupon', response?.data.data);
+      setCoupondata(response.data.data);
+      // Set loading to false after the request is complete
+      ///  setLoad(false);
+      //setCoupondata('');
+    } catch (error) {
+      // Handle errors
+      console.error('Error making POST request:', error);
+
+      // Set loading to false in case of an error
+      // setLoad(false);
+    } finally {
+      setLoad(false);
+    }
+  };
+  const handleapply = async code => {
+    try {
+      const addressid = await getData('addressid');
+      if (addressid == null) {
+        navigation.navigate('Address');
+        Snackbar.show({
+          text: 'Select or Add your Address',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        return;
+      }
+      setLoad(true);
+      const id = await getData('id');
+      const response = await axios.post(
+        'https://newannakadosa.com/api/apply/coupon',
+        {coupon_code: code, user_id: id, address_id: addressid},
+      );
+
+      // Handle the response data here
+      if (response.status === 200) {
+        console.log('offer', response.data);
+        Snackbar.show({
+          text: 'Offer applied to cart ,Successfully! ',
+          textColor: 'white',
+          backgroundColor: 'green',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        //await storeData('coupon', code);
+        //console.log(response.data.data);
+        navigation.navigate('Cart', {
+          offercartdata: response.data.data,
+          coupon: code,
+        });
+      } else {
+        Snackbar.show({
+          text: 'Offer not valid for your cart  ',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        });
+        navigation.navigate('Cart');
+        console.log('offer', response.data);
+      }
+      //setCoupondata(response.data.data);
+      // Set loading to false after the request is complete
+      ///  setLoad(false);
+    } catch (error) {
+      // Handle errors
+      console.error('Error making POST request:', error);
+
+      // Set loading to false in case of an error
+      // setLoad(false);
+    } finally {
+      setLoad(false);
+    }
+  };
+  if (load) {
+    return <Loading />;
+  }
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -19,8 +142,8 @@ const Annaoffer = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -56,8 +179,11 @@ const Annaoffer = ({navigation}) => {
                 borderColor: 'lightgray',
               }}
               placeholder="eg. LP1234"
+              onChangeText={setcoupon}
+              value={coupon}
             />
             <TouchableOpacity
+              onPress={handleCoupon}
               style={{
                 backgroundColor: 'red',
                 alignSelf: 'center',
@@ -71,7 +197,7 @@ const Annaoffer = ({navigation}) => {
                   color: 'white',
                   fontWeight: 'bold',
                 }}>
-                Apply
+                Search
               </Text>
             </TouchableOpacity>
           </View>
@@ -79,7 +205,7 @@ const Annaoffer = ({navigation}) => {
         <View style={{backgroundColor: 'lightgray', padding: 10}}>
           <Text
             style={{
-              fontSize: 23,
+              fontSize: 20,
               color: 'black',
               //fontWeight: 'bold',
             }}>
@@ -87,7 +213,75 @@ const Annaoffer = ({navigation}) => {
           </Text>
         </View>
         <View style={{margin: 20}}>
-          <View
+          {coupondata == undefined && (
+            <View style={{flexDirection: 'row', alignSelf: 'center'}}>
+              <View
+                style={{
+                  // backgroundColor: 'green',
+                  padding: 10,
+                  borderRadius: 10,
+                }}>
+                <Text
+                  style={{fontSize: 17, fontWeight: 'bold', color: 'black'}}>
+                  No coupons to show.
+                </Text>
+              </View>
+            </View>
+          )}
+          {coupondata?.length > 0 &&
+            coupondata?.map((coupon, index) => (
+              <View
+                key={coupon?.id}
+                style={{
+                  marginBottom: 20,
+                  borderBottomWidth: 0.8,
+                  borderColor: 'lightgray',
+                }}>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                  }}>
+                  <View
+                    style={{
+                      backgroundColor: 'green',
+                      padding: 10,
+                      borderRadius: 10,
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 17,
+                        fontWeight: 'bold',
+                        color: 'white',
+                      }}>
+                      {coupon?.code}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    onPress={
+                      () => handleapply(coupon?.code)
+                      // navigation.navigate('Cart', {discount: coupon})
+                    }
+                    style={{alignSelf: 'center'}}>
+                    <Text style={{fontSize: 17, color: 'red'}}>Apply</Text>
+                  </TouchableOpacity>
+                </View>
+                <View style={{marginTop: 10}}>
+                  <Text style={{fontSize: 17, color: 'black'}}>
+                    {coupon?.name}
+                  </Text>
+                </View>
+                <View style={{marginVertical: 10}}>
+                  <Text style={{fontSize: 15, color: 'gray'}}>
+                    Valid only on Min. purchase of ₹{coupon.min_purchase_price}
+                    and Max. quantity of {coupon.max_quantity} Upto ₹
+                    {coupon?.discount} off.
+                  </Text>
+                </View>
+              </View>
+            ))}
+
+          {/* <View
             style={{
               marginBottom: 20,
               borderBottomWidth: 0.8,
@@ -253,7 +447,7 @@ const Annaoffer = ({navigation}) => {
                 continental foods
               </Text>
             </View>
-          </View>
+          </View> */}
         </View>
       </ScrollView>
     </SafeAreaView>

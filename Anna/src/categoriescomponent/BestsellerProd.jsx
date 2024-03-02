@@ -5,57 +5,57 @@ import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
 const ProductItem = ({item, navigation, index, load, setLoad}) => {
-  const onAddPress = async productId => {
-    setLoad(true);
-    const id = await getData('id');
-    console.log('best seller uid', id);
-    try {
-      const apiUrl = 'https://techiedom.com/annakadosa/api/store/cart/'; // Replace with your actual API endpoint
-      // const userId = id;
+  // const onAddPress = async productId => {
+  //   setLoad(true);
+  //   const id = await getData('id');
+  //   console.log('best seller uid', id);
+  //   try {
+  //     const apiUrl = 'https://techiedom.com/annakadosa/api/store/cart/'; // Replace with your actual API endpoint
+  //     // const userId = id;
 
-      const response = await axios.post(apiUrl, {
-        user_id: id,
-        product_id: item.id,
-        qty: 1,
-      });
-      console.log(response);
-      // If the request is successful, navigate or perform other actions
-      if (response && response.data) {
-        setLoad(false);
-        Snackbar.show({
-          text: 'Added in Cart Successfully',
-          textColor: 'white',
-          backgroundColor: 'green',
-          duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-        });
-        navigation.navigate('Productinfo', {item: item});
+  //     const response = await axios.post(apiUrl, {
+  //       user_id: id,
+  //       product_id: item.id,
+  //       qty: 1,
+  //     });
+  //     console.log(response);
+  //     // If the request is successful, navigate or perform other actions
+  //     if (response && response.data) {
+  //       setLoad(false);
+  //       Snackbar.show({
+  //         text: 'Added in Cart Successfully',
+  //         textColor: 'white',
+  //         backgroundColor: 'green',
+  //         duration: Snackbar.LENGTH_SHORT,
+  //         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+  //       });
+  //       navigation.navigate('Productinfo', {item: item});
 
-        // You can navigate or perform any other action here
-      } else {
-        setLoad(false);
-        // Alert.alert('Error', 'Error in adding product to cart');
-        Snackbar.show({
-          text: 'Failed in adding product to cart ',
-          textColor: 'white',
-          backgroundColor: 'red',
-          duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-        });
-        console.error('Failed to add product to cart.');
-      }
-    } catch (error) {
-      setLoad(false);
-      Snackbar.show({
-        text: 'Failed in adding product to cart ',
-        textColor: 'white',
-        backgroundColor: 'red',
-        duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-      });
-      console.error('Error adding product to cart:', error);
-    }
-  };
+  //       // You can navigate or perform any other action here
+  //     } else {
+  //       setLoad(false);
+  //       // Alert.alert('Error', 'Error in adding product to cart');
+  //       Snackbar.show({
+  //         text: 'Failed in adding product to cart ',
+  //         textColor: 'white',
+  //         backgroundColor: 'red',
+  //         duration: Snackbar.LENGTH_SHORT,
+  //         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+  //       });
+  //       console.error('Failed to add product to cart.');
+  //     }
+  //   } catch (error) {
+  //     setLoad(false);
+  //     Snackbar.show({
+  //       text: 'Failed in adding product to cart ',
+  //       textColor: 'white',
+  //       backgroundColor: 'red',
+  //       duration: Snackbar.LENGTH_SHORT,
+  //       marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+  //     });
+  //     console.error('Error adding product to cart:', error);
+  //   }
+  // };
 
   return (
     <View style={{marginLeft: index === 0 ? 5 : 20}}>
@@ -77,7 +77,7 @@ const ProductItem = ({item, navigation, index, load, setLoad}) => {
             paddingHorizontal: 30,
             paddingVertical: 15,
           }}
-          onPress={onAddPress}>
+          onPress={() => navigation.navigate('Productinfo', {item: item})}>
           <Text style={{fontSize: 16, fontWeight: 'bold', color: 'black'}}>
             Add
           </Text>

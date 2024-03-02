@@ -73,7 +73,7 @@ const Signup = ({navigation}) => {
       // Check if required data is available
       if (fullname && email && selectedGender && datetext) {
         const userData = {
-          id: uid,
+          user_id: uid,
           name: fullname,
           email: email,
           gender: selectedGender,
@@ -83,7 +83,7 @@ const Signup = ({navigation}) => {
         console.log('User Data:', userData);
 
         const response = await axios.post(
-          'https://techiedom.com/annakadosa/api/welcome/profile', // Replace with your actual API endpoint
+          'https://newannakadosa.com/api/welcome/profile', // Replace with your actual API endpoint
           userData,
         );
 
@@ -140,8 +140,8 @@ const Signup = ({navigation}) => {
           <Image
             source={require('../../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -307,7 +307,7 @@ const Signup = ({navigation}) => {
             borderRadius: 40,
             //padding: 20,
             paddingHorizontal: 20,
-            paddingVertical: 19,
+            paddingVertical: 15,
           }}>
           <Text
             style={{

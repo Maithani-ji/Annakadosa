@@ -10,8 +10,11 @@ import {
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
+import {useWindowDimensions} from 'react-native';
+import RenderHTML from 'react-native-render-html';
 
 const About = ({navigation}) => {
+  const {width} = useWindowDimensions();
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState('');
   useEffect(() => {
@@ -22,7 +25,7 @@ const About = ({navigation}) => {
     setLoad(true);
     try {
       const response = await axios.get(
-        'https://techiedom.com/annakadosa/api/about/us',
+        'https://newannakadosa.com/api/about/us',
       );
 
       // Assuming the API returns a JSON object
@@ -51,8 +54,8 @@ const About = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -68,29 +71,23 @@ const About = ({navigation}) => {
           About Us
         </Text>
       </View>
-      <ScrollView style={{margin: 20}} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{marginHorizontal: 20}}
+        showsVerticalScrollIndicator={false}>
         <View>
           <Text
             style={{
               fontSize: 25,
               color: 'black',
               fontWeight: 'bold',
-              marginBottom: 20,
+              marginVertical: 20,
             }}>
             Our Story
           </Text>
         </View>
 
         <View>
-          <Text
-            style={{
-              fontSize: 17,
-              color: 'gray',
-
-              marginBottom: 20,
-            }}>
-            {details}
-          </Text>
+          <RenderHTML contentWidth={width} source={{html: details}} />
         </View>
       </ScrollView>
     </SafeAreaView>

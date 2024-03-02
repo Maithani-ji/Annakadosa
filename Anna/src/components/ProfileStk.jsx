@@ -16,53 +16,55 @@ import axios from 'axios';
 import Loading from '../loadingcomponent/loading';
 import {getData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
+
 const Profile = ({navigation}) => {
   useEffect(() => {
-    const fetchData = async () => {
-      setLoad(true);
-      const id = await getData('id');
-      try {
-        const requestBody = {
-          id: id,
-        };
-
-        const response = await axios.post(
-          'https://techiedom.com/annakadosa/api/user/profile',
-          requestBody,
-        );
-        // console.log('data', response.data);
-        // Check if response data is truthy before destructuring
-        if (!!response.data) {
-          const userData = response.data.data[0]; // Assuming the user data is in an array
-          console.log('userdata', userData);
-          // Set states based on fetched user data
-          setUserData(userData);
-          setFullname(userData.name);
-          setemail(userData.email);
-          setdatetext(userData.dob);
-          seturl(userData.image);
-          if (userData.gender == 'male') {
-            setSelectedId('1');
-          } else if (userData.gender == 'female') {
-            setSelectedId('2');
-          }
-        }
-        setLoad(false);
-      } catch (error) {
-        setLoad(false);
-        console.error('API error:', error);
-        Snackbar.show({
-          text: 'Failed in fetching information ',
-          textColor: 'white',
-          backgroundColor: 'red',
-          duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-        });
-      }
-    };
-
     fetchData();
   }, []); // Dependency array to ensure the effect runs when 'id' changes
+  const fetchData = async () => {
+    setLoad(true);
+    const id = await getData('id');
+    try {
+      const requestBody = {
+        user_id: id,
+      };
+
+      const response = await axios.post(
+        'https://newannakadosa.com/api/profile/',
+        requestBody,
+      );
+      console.log('data', response.data.data[0]);
+      // Check if response data is truthy before destructuring
+      if (!!response.data) {
+        const userData = response.data.data[0]; // Assuming the user data is in an array
+        console.log('userdata', userData);
+        // Set states based on fetched user data
+        setUserData(userData);
+        setFullname(userData.name);
+        setemail(userData.email);
+        setdatetext(userData.dob);
+        seturl(userData.image);
+        if (userData.gender == 'male') {
+          setSelectedId('1');
+          setSelectedGender('male');
+        } else if (userData.gender == 'female') {
+          setSelectedId('2');
+          setSelectedGender('female');
+        }
+      }
+      setLoad(false);
+    } catch (error) {
+      setLoad(false);
+      console.error('API error:', error);
+      Snackbar.show({
+        text: 'Failed in fetching information ',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+    }
+  };
   const [user, setUserData] = useState(null);
   const [selectedId, setSelectedId] = useState();
   const [selectedGender, setSelectedGender] = useState('');
@@ -112,9 +114,9 @@ const Profile = ({navigation}) => {
     const id = await getData('id');
     try {
       // Check if required data is available
-      if (fullname && email && selectedGender && datetext) {
+      if (fullname || email || selectedGender || datetext) {
         const user = {
-          id: id,
+          user_id: id,
           name: fullname,
           email: email, // check from backend if there is any checking in email
           gender: selectedGender,
@@ -124,7 +126,7 @@ const Profile = ({navigation}) => {
         // console.log('User Data:', user);
 
         const response = await axios.post(
-          'https://techiedom.com/annakadosa/api/welcome/profile', // Replace with your actual API endpoint
+          'https://newannakadosa.com/api/welcome/profile', // Replace with your actual API endpoint
           user,
         );
 
@@ -132,14 +134,15 @@ const Profile = ({navigation}) => {
 
         setLoad(false);
         Snackbar.show({
-          text: 'Profile edited Successfully',
+          text: 'Profile Updated Successfully',
           textColor: 'white',
           backgroundColor: 'green',
           duration: Snackbar.LENGTH_SHORT,
           marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
         });
 
-        navigation.navigate('Main');
+        //navigation.navigate('Main');
+        fetchData();
       } else {
         setLoad(false);
         Alert.alert('Please fill in all the required fields');
@@ -147,7 +150,7 @@ const Profile = ({navigation}) => {
     } catch (error) {
       setLoad(false);
       Snackbar.show({
-        text: 'Failed to edit profile !',
+        text: 'Failed to Update profile !',
         textColor: 'white',
         backgroundColor: 'red',
         duration: Snackbar.LENGTH_SHORT,
@@ -168,8 +171,8 @@ const Profile = ({navigation}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -244,6 +247,7 @@ const Profile = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
+              color: 'black',
             }}
             placeholder="Your full Name"
             onChangeText={setFullname}
@@ -265,6 +269,7 @@ const Profile = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
+              color: 'black',
             }}
             keyboardType="email-address"
             placeholder="Your Email Address"
@@ -277,7 +282,7 @@ const Profile = ({navigation}) => {
             style={{
               fontSize: 15,
               fontWeight: 'bold',
-              color: 'black',
+              //color: 'black',
               marginTop: 30,
               marginBottom: 10,
             }}>
@@ -286,19 +291,19 @@ const Profile = ({navigation}) => {
           <View>
             <RadioGroup
               radioButtons={radioButtons}
-              color={'red'}
+              color={'black'}
               onPress={value => {
                 setSelectedId(value);
-                if (value == 1) {
+                if (value == '1') {
                   setSelectedGender('male');
-                } else if (value == 2) {
+                } else if (value == '2') {
                   setSelectedGender('female');
                 }
               }}
               selectedId={selectedId} // Use selected gender instead of selected id
               containerStyle={{}}
               descriptionStyle={{}}
-              labelStyle={{}}
+              labelStyle={{color: 'black'}}
               layout="row"
             />
           </View>
@@ -347,7 +352,7 @@ const Profile = ({navigation}) => {
             alignSelf: 'center',
             backgroundColor: 'green',
             borderRadius: 40,
-            padding: 25,
+            padding: 15,
           }}>
           <Text
             style={{

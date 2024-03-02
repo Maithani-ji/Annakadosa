@@ -22,8 +22,7 @@ const Menuproducts = ({navigation, route}) => {
       const fetchData = async () => {
         setLoad(true);
         try {
-          const apiUrl =
-            'https://techiedom.com/annakadosa/api/categories-product';
+          const apiUrl = 'https://newannakadosa.com/api/categories-product';
           const body = {category_id: item.id};
           const response = await axios.post(apiUrl, body);
           //console.log('response for particular product', response.data.data);
@@ -43,7 +42,7 @@ const Menuproducts = ({navigation, route}) => {
       const fetchData = async () => {
         setLoad(true);
         try {
-          const apiUrl = 'https://techiedom.com/annakadosa/api/products';
+          const apiUrl = 'https://newannakadosa.com/api/products';
 
           const response = await axios.get(apiUrl);
           //console.log(response.data.data);
@@ -71,8 +70,8 @@ const Menuproducts = ({navigation, route}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -92,21 +91,25 @@ const Menuproducts = ({navigation, route}) => {
           <Image
             source={require('../assets/iconsassets/Search.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 28,
+              height: 28,
             }}
           />
         </TouchableOpacity>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
-        <FlatList
-          scrollEnabled={false}
-          data={products}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => (
-            <RenderCategoryItem item={item} navigation={navigation} />
-          )}
-        />
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
+        <View style={{marginTop: 20}}>
+          <FlatList
+            scrollEnabled={false}
+            data={products}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => (
+              <RenderCategoryItem item={item} navigation={navigation} />
+            )}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

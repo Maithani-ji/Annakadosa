@@ -26,7 +26,7 @@ const Searchmenu = ({navigation, route}) => {
     const fetchData = async () => {
       setLoad(true);
       try {
-        const apiUrl = 'https://techiedom.com/annakadosa/api/search';
+        const apiUrl = 'https://newannakadosa.com/api/search';
         const body = {category_id: id};
         const response = await axios.post(apiUrl, body);
 
@@ -90,8 +90,8 @@ const Searchmenu = ({navigation, route}) => {
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{
-              width: 35,
-              height: 35,
+              width: 30,
+              height: 30,
             }}
           />
         </TouchableOpacity>
@@ -108,25 +108,29 @@ const Searchmenu = ({navigation, route}) => {
         </Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
         <View
           style={{
             flexDirection: 'row',
             justifyContent: 'space-between',
-            borderRadius: 20,
+            borderRadius: 15,
             borderWidth: 1,
             borderColor: 'lightgray',
-            padding: 10,
-            marginBottom: 30,
+            paddingHorizontal: 5,
+            // paddingVertical: 2,
+            marginVertical: 15,
           }}>
           <TextInput
-            style={{fontSize: 18, color: 'black'}}
+            style={{fontSize: 16, color: 'black'}}
             placeholder="Search for Dosa or more"
+            placeholderTextColor={'gray'}
             value={searchQuery}
             onChangeText={text => setSearchQuery(text)}
             onSubmitEditing={handleSearch} // Trigger search on submit
           />
-          <View style={{margin: 7}}>
+          <View style={{margin: 5, marginTop: 10}}>
             <TouchableOpacity onPress={handleSearch}>
               <Image
                 source={
@@ -134,7 +138,7 @@ const Searchmenu = ({navigation, route}) => {
                     ? require('../assets/iconsassets/Cross.png') // Cross icon
                     : require('../assets/iconsassets/Search.png') // Search icon
                 }
-                style={{height: 30, width: 30}}
+                style={{height: 25, width: 25}}
               />
             </TouchableOpacity>
           </View>
@@ -144,7 +148,7 @@ const Searchmenu = ({navigation, route}) => {
           <Text
             style={{
               //flex: 1,
-              fontSize: 27,
+              fontSize: 25,
               fontWeight: 'bold',
               color: 'black',
               //marginLeft: 10,
@@ -153,14 +157,31 @@ const Searchmenu = ({navigation, route}) => {
             Trending Items
           </Text>
         </View>
-        <FlatList
-          scrollEnabled={false}
-          data={products}
-          keyExtractor={item => item.id}
-          renderItem={({item}) => (
-            <RenderCategoryItem item={item} navigation={navigation} />
-          )}
-        />
+        {products.length > 0 ? (
+          <FlatList
+            scrollEnabled={false}
+            data={products}
+            keyExtractor={item => item.id}
+            renderItem={({item}) => (
+              <RenderCategoryItem item={item} navigation={navigation} />
+            )}
+          />
+        ) : (
+          <View>
+            <Text
+              style={{
+                //flex: 1,
+                fontSize: 22,
+                marginTop: 50,
+                //fontWeight: 'bold',
+                color: 'black',
+                //marginLeft: 10,
+                textAlign: 'center',
+              }}>
+              Items not found.
+            </Text>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

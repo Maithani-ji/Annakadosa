@@ -22,6 +22,7 @@ const CategoryItem = ({item, navigation}) => (
         style={{
           width: 100,
           height: 100,
+          marginLeft: 5,
         }}
       />
       <View style={{}}>

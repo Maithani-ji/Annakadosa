@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -20,6 +21,7 @@ import Snackbar from 'react-native-snackbar';
 
 const Cart = ({navigation, route}) => {
   const [discount, setDiscount] = useState(null);
+  const colorScheme = useColorScheme();
   const [load, setLoad] = useState(false);
   const [cartData, setCartData] = useState();
   const [uid, setuid] = useState();
@@ -71,17 +73,17 @@ const Cart = ({navigation, route}) => {
     const defaultadd = await getData('address');
     setdefaultaddress(defaultadd);
     const addressid = await getData('addressid');
-    if (addressid == null) {
-      navigation.navigate('Address');
-      Snackbar.show({
-        text: 'Please, Add your Address.',
-        textColor: 'white',
-        backgroundColor: 'green',
-        duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-      });
-      return;
-    }
+    // if (addressid == null) {
+    //   navigation.navigate('Address', {cart: true});
+    //   Snackbar.show({
+    //     text: ' Add or Select your Address.',
+    //     textColor: 'white',
+    //     backgroundColor: 'green',
+    //     duration: Snackbar.LENGTH_SHORT,
+    //     marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+    //   });
+    //   return;
+    // }
     setaddid(addressid);
     try {
       setLoad(true);
@@ -193,7 +195,51 @@ const Cart = ({navigation, route}) => {
     setshow(!show);
     setmode(currentMode);
   };
+  const handleProceedToCheckout = async () => {
+    const defaultadd = await getData('address');
+    setdefaultaddress(defaultadd);
+    const addressid = await getData('addressid');
+    setaddid(addressid);
+    // Check if the necessary details are available
+    // if (!CartData || !addid) {
+    //   console.log(addid, CartData);
+    //   // Show an error message or take appropriate action
+    //   return;
+    // }
+    console.log(addid, CartData);
+    if (addressid == null) {
+      // navigation.navigate('Address', {cart: true});
+      Snackbar.show({
+        text: ' Add or Select your Address.',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+      });
+      return;
+    }
 
+    // Navigate to 'Paymentmethod' screen with the required details
+    navigation.navigate('Paymentmethod', {
+      details: {
+        cart: CartData,
+        delivery_charge: cartData.delivery_fee,
+        user_id: uid,
+        coupon: cartData.coupon,
+        coupon_code: offercode || '',
+        payment_method: '',
+        amount: cartData.total_price,
+        total: cartData.grand_total,
+        gst: cartData.gst,
+        instruction: instruction,
+        address_id: addid,
+        online_order_id: '',
+      },
+    });
+
+    // Reset route params to null
+    route.params = null;
+  };
   if (load) {
     return <Loading color={'white'} />;
   }
@@ -287,7 +333,8 @@ const Cart = ({navigation, route}) => {
         </View>
       ) : (
         <>
-          <TouchableOpacity onPress={() => navigation.navigate('Address')}>
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Address', {cart: false})}>
             <View
               style={{
                 borderBottomColor: 'lightgray',
@@ -325,7 +372,7 @@ const Cart = ({navigation, route}) => {
                   {/* // </View> */}
                 </View>
                 <TouchableOpacity
-                  onPress={() => navigation.navigate('Address')}>
+                  onPress={() => navigation.navigate('Address', {cart: false})}>
                   <Text
                     style={{
                       //  flex: 1,
@@ -411,6 +458,9 @@ const Cart = ({navigation, route}) => {
                     color: 'black',
                     marginLeft: 10,
                   }}
+                  placeholderTextColor={
+                    colorScheme === 'dark' ? 'gray' : 'gray'
+                  }
                   value={instruction}
                   onChangeText={setinstruction}
                   onSubmitEditing={handleinstruction}
@@ -653,7 +703,7 @@ const Cart = ({navigation, route}) => {
 
                     marginBottom: 10,
                   }}>
-                  Discount(offer)
+                  Discount({offercode != null ? offercode : 'offer'})
                 </Text>
                 <Text
                   style={{
@@ -711,47 +761,7 @@ const Cart = ({navigation, route}) => {
               </Text>
             </View>
             <TouchableOpacity
-              onPress={() => {
-                navigation.navigate('Paymentmethod', {
-                  details: {
-                    cart: CartData,
-                    //order_id: response?.data?.data?.order_id,
-                    delivery_charge: cartData?.delivery_fee,
-                    user_id: uid,
-                    coupon: cartData?.coupon,
-                    coupon_code: offercode == null ? '' : offercode,
-                    payment_method: '',
-                    amount: cartData?.total_price,
-                    total: cartData?.grand_total,
-                    gst: cartData?.gst,
-                    //optional_item_price: '0',
-                    instruction: instruction,
-                    address_id: addid,
-                    online_order_id: '',
-                  },
-                });
-                route.params = null;
-              }}
-              // {
-              //   let details = {
-              //     cart: CartData,
-              //     //order_id: response?.data?.data?.order_id,
-              //     delivery_charge: cartData?.delivery_fee,
-              //     user_id: uid,
-              //     coupon: cartData?.coupon,
-              //     coupon_code: offercode == null ? '' : offercode,
-              //     payment_method: '',
-              //     amount: cartData?.total_price,
-              //     total: cartData?.grand_total,
-              //     gst: cartData?.gst,
-              //     //optional_item_price: '0',
-              //     instruction: instruction,
-              //     address_id: addid,
-              //   };
-              //   console.log(details);
-              // }
-
-              //onPress={handlecreateOrder}
+              onPress={handleProceedToCheckout}
               style={{
                 marginVertical: 30,
                 alignSelf: 'center',
@@ -760,6 +770,56 @@ const Cart = ({navigation, route}) => {
                 paddingHorizontal: 15,
                 paddingVertical: 15,
               }}>
+              {/* // onPress={() => {
+              //   navigation.navigate('Paymentmethod', {
+              //     details: {
+              //       cart: CartData,
+              //       //order_id: response?.data?.data?.order_id,
+              //       delivery_charge: cartData?.delivery_fee,
+              //       user_id: uid,
+              //       coupon: cartData?.coupon,
+              //       coupon_code: offercode == null ? '' : offercode,
+              //       payment_method: '',
+              //       amount: cartData?.total_price,
+              //       total: cartData?.grand_total,
+              //       gst: cartData?.gst,
+              //       //optional_item_price: '0',
+              //       instruction: instruction,
+              //       address_id: addid,
+              //       online_order_id: '',
+              //     },
+              //   });
+              //   route.params = null;
+              // }}
+              // // {
+              // //   let details = {
+              // //     cart: CartData,
+              // //     //order_id: response?.data?.data?.order_id,
+              // //     delivery_charge: cartData?.delivery_fee,
+              // //     user_id: uid,
+              // //     coupon: cartData?.coupon,
+              // //     coupon_code: offercode == null ? '' : offercode,
+              // //     payment_method: '',
+              // //     amount: cartData?.total_price,
+              // //     total: cartData?.grand_total,
+              // //     gst: cartData?.gst,
+              // //     //optional_item_price: '0',
+              // //     instruction: instruction,
+              // //     address_id: addid,
+              // //   };
+              // //   console.log(details);
+              // // }
+
+              // //onPress={handlecreateOrder}
+              // style={{
+              //   marginVertical: 30,
+              //   alignSelf: 'center',
+              //   backgroundColor: 'green',
+              //   borderRadius: 40,
+              //   paddingHorizontal: 15,
+              //   paddingVertical: 15,
+                // }}> */}
+
               <Text
                 style={{
                   fontSize: 16,

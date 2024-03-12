@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Loading from '../loadingcomponent/loading';
@@ -18,6 +19,7 @@ const Annaoffer = ({navigation}) => {
   const [coupon, setcoupon] = useState('');
   const [load, setLoad] = useState(false);
   const [coupondata, setCoupondata] = useState(null);
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     fetchCouponData();
@@ -74,7 +76,7 @@ const Annaoffer = ({navigation}) => {
     try {
       const addressid = await getData('addressid');
       if (addressid == null) {
-        navigation.navigate('Address');
+        navigation.navigate('Address', {cart: false});
         Snackbar.show({
           text: 'Select or Add your Address',
           textColor: 'white',
@@ -90,9 +92,9 @@ const Annaoffer = ({navigation}) => {
         'https://newannakadosa.com/api/apply/coupon',
         {coupon_code: code, user_id: id, address_id: addressid},
       );
-
+      console.log('responsw', response.data);
       // Handle the response data here
-      if (response.status === 200) {
+      if (response.data.status_code === 200) {
         console.log('offer', response.data);
         Snackbar.show({
           text: 'Offer applied to cart ,Successfully! ',
@@ -177,10 +179,12 @@ const Annaoffer = ({navigation}) => {
                 fontSize: 18,
                 borderBottomWidth: 1,
                 borderColor: 'lightgray',
+                color: colorScheme === 'dark' ? 'black' : 'black',
               }}
               placeholder="eg. LP1234"
               onChangeText={setcoupon}
               value={coupon}
+              placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
             />
             <TouchableOpacity
               onPress={handleCoupon}

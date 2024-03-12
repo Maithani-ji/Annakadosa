@@ -6,7 +6,7 @@ import Mainnav from './MainnavTab';
 import {clearAsyncStorage, getData, storeData} from '../utils/AsyncStorag';
 import Main from './Main';
 import {useLogin} from '../utils/LoginproviderContext';
-import NavigationService from '../Navigation/NavigationService';
+import NavigationService from './Navigation/NavigationService';
 import {notificationListeners} from '../utils/notificationService';
 
 const Nav = () => {

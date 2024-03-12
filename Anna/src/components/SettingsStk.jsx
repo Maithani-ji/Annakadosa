@@ -35,7 +35,9 @@ const Settings = ({navigation}) => {
           Settings
         </Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
         <View
           style={{
             // margin: 5,
@@ -45,6 +47,7 @@ const Settings = ({navigation}) => {
             // shadowOpacity: 0.1, // Shadow opacity (Android)
             // shadowRadius: 20,
             // shadowRadius: 20,
+            marginTop: 20,
             borderRadius: 20,
             borderWidth: 0.3,
             borderColor: 'gray',
@@ -107,7 +110,7 @@ const Settings = ({navigation}) => {
             </TouchableOpacity>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => navigation.navigate('Address')}
+            onPress={() => navigation.navigate('Address', {cart: false})}
             style={{
               flexDirection: 'row',
               borderBottomColor: 'lightgray',
@@ -115,7 +118,8 @@ const Settings = ({navigation}) => {
               marginVertical: 10,
               paddingBottom: 10,
             }}>
-            <TouchableOpacity onPress={() => navigation.navigate('Address')}>
+            <TouchableOpacity
+              onPress={() => navigation.navigate('Address', {cart: false})}>
               <Image
                 source={require('../assets/iconsassets/location.png')}
                 style={{
@@ -136,7 +140,7 @@ const Settings = ({navigation}) => {
               Manage Address
             </Text>
             <TouchableOpacity
-              onPress={() => navigation.navigate('Address')}
+              onPress={() => navigation.navigate('Address', {cart: false})}
               style={{borderRadius: 40, overflow: 'hidden'}}
               //</View>onPress={() => navigation.navigate('SignIn')}
             >

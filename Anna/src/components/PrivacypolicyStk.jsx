@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -16,6 +17,7 @@ const Privacy = ({navigation}) => {
   const {width} = useWindowDimensions();
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState('');
+  const colorScheme = useColorScheme();
   useEffect(() => {
     fetchDetails();
   }, []);
@@ -46,10 +48,14 @@ const Privacy = ({navigation}) => {
     return <Loading />;
   }
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
       <View
         style={{backgroundColor: '#fed920', padding: 9, flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Image
             source={require('../assets/iconsassets/left-arrow.png')}
             style={{

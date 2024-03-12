@@ -156,7 +156,7 @@ const Menu = ({navigation}) => {
         </TouchableOpacity>
         <View style={{flex: 1}}>
           <TouchableOpacity style={{flexDirection: 'row', marginLeft: 5}}>
-            <Text> Outlet</Text>
+            <Text style={{color: 'gray'}}> Outlet</Text>
             {/* <Image
               source={require('../../assets/iconsassets/dropdown.png')}
               style={{height: 15, width: 15, marginTop: 3, marginLeft: 3}}

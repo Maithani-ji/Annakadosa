@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import Loading from '../loadingcomponent/loading';
@@ -23,6 +24,7 @@ const Orderhistory = ({navigation}) => {
       fetchhistory();
     }, []),
   );
+  const colorScheme = useColorScheme();
   const fetchhistory = async () => {
     try {
       const id = await getData('id');
@@ -429,20 +431,34 @@ const Orderhistory = ({navigation}) => {
                         width: '50%',
                       }}>
                       <Text
-                        style={{alignSelf: 'flex-start', textAlign: 'left'}}>
+                        style={{
+                          alignSelf: 'flex-start',
+                          textAlign: 'left',
+                          color: colorScheme === 'dark' ? 'gray' : 'gray',
+                        }}>
                         {product?.product_name}
                       </Text>
                       <Text
-                        style={{alignSelf: 'flex-start', textAlign: 'left'}}>
+                        style={{
+                          alignSelf: 'flex-start',
+                          textAlign: 'left',
+                          color: colorScheme === 'dark' ? 'gray' : 'gray',
+                        }}>
                         x {product?.qty}
                       </Text>
                     </View>
-                    <Text>Price/Unit ₹{product?.unit_price}</Text>
+                    <Text
+                      style={{color: colorScheme === 'dark' ? 'gray' : 'gray'}}>
+                      Price/Unit ₹{product?.unit_price}
+                    </Text>
                   </View>
                 ))}
                 {item?.instruction && (
                   <View style={{flex: 1}}>
-                    <Text>Instructions : {item?.instruction}</Text>
+                    <Text
+                      style={{color: colorScheme === 'dark' ? 'gray' : 'gray'}}>
+                      Instructions : {item?.instruction}
+                    </Text>
                   </View>
                 )}
                 <View style={{marginTop: 10}}>
@@ -455,6 +471,7 @@ const Orderhistory = ({navigation}) => {
                     <Text
                       style={{
                         fontSize: 18,
+                        color: colorScheme === 'dark' ? 'gray' : 'gray',
                         //textAlign: 'center',
                         //color: 'white',
                         fontWeight: 'bold',
@@ -481,6 +498,7 @@ const Orderhistory = ({navigation}) => {
                       style={{
                         fontSize: 18,
                         //textAlign: 'center',
+                        color: colorScheme === 'dark' ? 'gray' : 'gray',
                         //color: 'white',
                         fontWeight: 'bold',
                       }}>
@@ -507,6 +525,7 @@ const Orderhistory = ({navigation}) => {
                         fontSize: 18,
                         //textAlign: 'center',
                         //color: 'white',
+                        color: colorScheme === 'dark' ? 'gray' : 'gray',
                         fontWeight: 'bold',
                       }}>
                       Coupon Discount
@@ -532,6 +551,7 @@ const Orderhistory = ({navigation}) => {
                         fontSize: 18,
                         //textAlign: 'center',
                         //color: 'white',
+                        color: colorScheme === 'dark' ? 'gray' : 'gray',
                         fontWeight: 'bold',
                       }}>
                       gst(5%)
@@ -556,6 +576,7 @@ const Orderhistory = ({navigation}) => {
                         fontSize: 18,
                         //textAlign: 'center',
                         //color: 'white',
+                        color: colorScheme === 'dark' ? 'gray' : 'gray',
                         fontWeight: 'bold',
                       }}>
                       Grand Total
@@ -571,7 +592,8 @@ const Orderhistory = ({navigation}) => {
                     </Text>
                   </View>
                   <View style={{marginVertical: 10}}>
-                    <Text>
+                    <Text
+                      style={{color: colorScheme === 'dark' ? 'gray' : 'gray'}}>
                       Ordered on:
                       {new Date(item?.created_at).toLocaleDateString()}
                     </Text>

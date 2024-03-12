@@ -6,10 +6,12 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React from 'react';
 
 const Trackorder = ({navigation}) => {
+  const colorScheme = useColorScheme();
   return (
     <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
       <View
@@ -51,8 +53,10 @@ const Trackorder = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
+              color: colorScheme === 'dark' ? 'black' : 'black',
             }}
             placeholder="+91 1234567890"
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <View>
@@ -70,8 +74,10 @@ const Trackorder = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
+              color: colorScheme === 'dark' ? 'black' : 'black',
             }}
             placeholder="LP3057"
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <TouchableOpacity

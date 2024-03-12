@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import messaging from '@react-native-firebase/messaging';
@@ -16,6 +17,7 @@ import Loading from '../../loadingcomponent/loading';
 const Notifications = ({navigation}) => {
   const [load, setLoad] = useState(false);
   const [notificationdata, setNotificationdata] = useState(null);
+  const colorScheme = useColorScheme();
   // const [deviceToken, setDeviceToken] = useState(null);
   // useEffect(() => {
   //   getDeviceToken();
@@ -93,7 +95,7 @@ const Notifications = ({navigation}) => {
         </TouchableOpacity>
         <View style={{flex: 1}}>
           <TouchableOpacity style={{flexDirection: 'row', marginLeft: 5}}>
-            <Text> Outlet</Text>
+            <Text style={{color: 'gray'}}> Outlet</Text>
             {/* <Image
               source={require('../../assets/iconsassets/dropdown.png')}
               style={{height: 15, width: 15, marginTop: 3, marginLeft: 3}}
@@ -134,7 +136,7 @@ const Notifications = ({navigation}) => {
               //flex: 1,
               fontSize: 25,
               fontWeight: 'bold',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
               // marginLeft: 10,
               //textAlignVertical: 'center',
               //  marginBottom: -6,
@@ -150,7 +152,7 @@ const Notifications = ({navigation}) => {
                 //alignSelf: 'center',
                 fontSize: 20,
                 fontWeight: 'bold',
-                color: 'lightgray',
+                color: colorScheme === 'dark' ? 'lightgray' : 'lightgray',
               }}>
               No Notifications yet!!
             </Text>
@@ -187,13 +189,25 @@ const Notifications = ({navigation}) => {
                 </Text>
               </View>
               <View style={{flex: 1}}>
-                <Text style={{fontWeight: 'bold', color: 'black'}}>
+                <Text
+                  style={{
+                    fontWeight: 'bold',
+                    color: colorScheme === 'dark' ? 'black' : 'black',
+                  }}>
                   {item?.title}
                 </Text>
-                <Text style={{color: 'black', marginBottom: 5}}>
+                <Text
+                  style={{
+                    color: colorScheme === 'dark' ? 'black' : 'black',
+                    marginBottom: 5,
+                  }}>
                   {item?.description}
                 </Text>
-                <Text style={{marginBottom: 10}}>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    color: colorScheme === 'dark' ? 'darkgray' : 'darkgray',
+                  }}>
                   {new Date(item?.created_at).toLocaleDateString()}
                 </Text>
               </View>

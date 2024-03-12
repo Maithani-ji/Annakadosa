@@ -5,6 +5,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useState} from 'react';
 import Loading from '../loadingcomponent/loading';
@@ -64,7 +65,7 @@ const RenderCategoryItem = ({item, navigation}) => {
   //     setLoad(false);
   //   }
   // };
-
+  const colorScheme = useColorScheme();
   return (
     <TouchableOpacity
       style={{
@@ -123,7 +124,12 @@ const RenderCategoryItem = ({item, navigation}) => {
           }}>
           ₹{item.price}
         </Text>
-        <Text numberOfLines={2} style={{marginBottom: 20}}>
+        <Text
+          numberOfLines={2}
+          style={{
+            marginBottom: 20,
+            color: colorScheme === 'dark' ? 'black' : 'black',
+          }}>
           {item.short_description}
         </Text>
       </View>

@@ -79,7 +79,7 @@ const Trackingorder = ({navigation}) => {
             />
           </View>
           <View style={{flex: 1, marginLeft: 5, marginTop: 10}}>
-            <Text style={{textAlign: 'center'}}>
+            <Text style={{textAlign: 'center', color: 'gray'}}>
               Tom Hedge is on the way to deliver your order
             </Text>
           </View>

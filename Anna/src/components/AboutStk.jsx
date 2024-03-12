@@ -6,6 +6,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -17,6 +18,7 @@ const About = ({navigation}) => {
   const {width} = useWindowDimensions();
   const [load, setLoad] = useState(false);
   const [details, setDetails] = useState('');
+  const colorScheme = useColorScheme();
   useEffect(() => {
     fetchDetails();
   }, []);
@@ -47,7 +49,11 @@ const About = ({navigation}) => {
     return <Loading />;
   }
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
       <View
         style={{backgroundColor: '#fed920', padding: 9, flexDirection: 'row'}}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -64,7 +70,7 @@ const About = ({navigation}) => {
             flex: 1,
             fontSize: 22,
             //sfontWeight: 'bold',
-            color: 'black',
+            color: colorScheme === 'dark' ? 'black' : 'black',
             marginLeft: 20,
             textAlignVertical: 'center',
           }}>

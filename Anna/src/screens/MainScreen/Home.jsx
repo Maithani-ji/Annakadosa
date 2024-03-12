@@ -10,6 +10,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {SliderBox} from 'react-native-image-slider-box';
@@ -28,6 +29,7 @@ const Home = ({navigation}) => {
   const [recomended, setRecommended] = useState([]);
   const [searchtext, setSearchtext] = useState('');
   const [searchdata, setSearchdata] = useState([]);
+  const colorScheme = useColorScheme();
   const [banner, setBanner] = useState();
   useEffect(() => {
     fetchImagesFromApi();

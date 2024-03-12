@@ -1,6 +1,6 @@
 import messaging from '@react-native-firebase/messaging';
 
-import NavigationService from '../Navigation/NavigationService';
+import NavigationService from '../nav/Navigation/NavigationService';
 import Snackbar from 'react-native-snackbar';
 import {getData, storeData} from './AsyncStorag';
 export async function notificationListeners() {

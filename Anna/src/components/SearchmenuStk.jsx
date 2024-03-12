@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -21,7 +22,7 @@ const Searchmenu = ({navigation, route}) => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [load, setLoad] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-
+  const colorScheme = useColorScheme();
   useEffect(() => {
     const fetchData = async () => {
       setLoad(true);

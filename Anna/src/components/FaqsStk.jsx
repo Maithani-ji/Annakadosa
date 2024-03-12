@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import Loading from '../loadingcomponent/loading';
 import axios from 'axios';
@@ -17,7 +18,7 @@ const Faqs = ({navigation}) => {
   const [faqsdata, setFaqsData] = useState([]);
   const [load, setLoad] = useState(false);
   const [showItems, setShowItems] = useState({});
-
+  const colorScheme = useColorScheme();
   useEffect(() => {
     fetchFaqs();
   }, []);
@@ -47,7 +48,11 @@ const Faqs = ({navigation}) => {
   }
 
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
       <View
         style={{backgroundColor: '#fed920', padding: 9, flexDirection: 'row'}}>
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
@@ -89,7 +94,8 @@ const Faqs = ({navigation}) => {
                     flex: 1,
                     fontSize: 18,
                     fontWeight: 'bold',
-                    color: 'black',
+                    color: colorScheme === 'dark' ? 'black' : 'black', // Updated this line
+                    //backgroundColor: 'white',
                   }}>
                   {data?.question}
                 </Text>

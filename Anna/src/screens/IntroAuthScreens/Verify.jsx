@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import axios from 'axios';
@@ -17,6 +18,7 @@ import Snackbar from 'react-native-snackbar';
 import {useLogin} from '../../utils/LoginproviderContext';
 
 const Verify = ({navigation, route}) => {
+  const colorScheme = useColorScheme();
   const {data} = route.params;
   const pin1ref = useRef(null);
   const pin2ref = useRef(null);
@@ -171,6 +173,8 @@ const Verify = ({navigation, route}) => {
               <TextInput
                 ref={pin1ref}
                 style={{
+                  color: colorScheme === 'dark' ? 'green' : 'black', // Updated this line
+                  backgroundColor: 'white',
                   width: 60,
                   height: 60,
                   borderRadius: 40,
@@ -178,9 +182,8 @@ const Verify = ({navigation, route}) => {
                   marginHorizontal: 5,
                   fontSize: 20,
                   textAlign: 'center',
-                  backgroundColor: 'white',
+
                   borderColor: 'white',
-                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -191,6 +194,7 @@ const Verify = ({navigation, route}) => {
                     pin2ref.current.focus();
                   }
                 }}
+                placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
               />
               <TextInput
                 ref={pin2ref}
@@ -202,9 +206,9 @@ const Verify = ({navigation, route}) => {
                   marginHorizontal: 5,
                   fontSize: 20,
                   textAlign: 'center',
+                  color: colorScheme === 'dark' ? 'green' : 'black', // Updated this line
                   backgroundColor: 'white',
                   borderColor: 'white',
-                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -226,9 +230,9 @@ const Verify = ({navigation, route}) => {
                   marginHorizontal: 5,
                   fontSize: 20,
                   textAlign: 'center',
+                  color: colorScheme === 'dark' ? 'green' : 'black', // Updated this line
                   backgroundColor: 'white',
                   borderColor: 'white',
-                  color: 'black',
                 }}
                 keyboardType="numeric"
                 maxLength={1}
@@ -250,6 +254,7 @@ const Verify = ({navigation, route}) => {
                   marginHorizontal: 5,
                   fontSize: 20,
                   textAlign: 'center',
+                  color: colorScheme === 'dark' ? 'green' : 'black', // Updated this line
                   backgroundColor: 'white',
                   borderColor: 'white',
                   textDecorationColor: 'black',
@@ -278,7 +283,7 @@ const Verify = ({navigation, route}) => {
                 textAlign: 'center',
                 fontSize: 17,
                 //fontWeight: 'bold',
-                //color: 'black',
+                color: 'black',
                 marginTop: 25,
                 marginBottom: 5,
               }}>
@@ -322,6 +327,7 @@ const Verify = ({navigation, route}) => {
                 style={{
                   textAlign: 'center',
                   fontSize: 15,
+                  color: colorScheme === 'dark' ? 'black' : 'black', // Updated this line
 
                   marginBottom: 20,
                 }}>

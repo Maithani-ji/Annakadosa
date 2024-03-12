@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -15,7 +16,9 @@ import {useFocusEffect} from '@react-navigation/native';
 import {getData, storeData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
 
-const Address = ({navigation}) => {
+const Address = ({navigation, route}) => {
+  const colorScheme = useColorScheme();
+  const {cart} = route?.params;
   useFocusEffect(
     React.useCallback(() => {
       // Call fetchData function when the screen is focused
@@ -68,6 +71,7 @@ const Address = ({navigation}) => {
   const [addid, setaddid] = useState('');
   const [addresses, setAddresses] = useState([]);
   const [load, setload] = useState(false);
+
   // const [selectedAddressIndex, setSelectedAddressIndex] = useState(-1);
   if (!load) {
     return (
@@ -78,7 +82,10 @@ const Address = ({navigation}) => {
             padding: 9,
             flexDirection: 'row',
           }}>
-          <TouchableOpacity onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            onPress={() =>
+              cart ? navigation.navigate('Menu') : navigation.goBack()
+            }>
             <Image
               source={require('../assets/iconsassets/left-arrow.png')}
               style={{
@@ -147,7 +154,12 @@ const Address = ({navigation}) => {
                   />
                 </View>
                 <View style={{flex: 1}}>
-                  <Text style={{fontSize: 16, marginLeft: 20}}>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      marginLeft: 20,
+                      color: colorScheme === 'dark' ? 'gray' : 'gray',
+                    }}>
                     {address?.type}
                   </Text>
                 </View>

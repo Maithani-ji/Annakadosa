@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useState} from 'react';
 import Loading from '../loadingcomponent/loading';
@@ -16,6 +17,7 @@ import axios from 'axios';
 import Snackbar from 'react-native-snackbar';
 
 const Feedback = ({navigation}) => {
+  const colorScheme = useColorScheme();
   const [defaultrating, setdefaultrating] = useState(1);
   const [starmp, setstarmp] = useState([1, 2, 3, 4, 5]);
   const [feedback, setFeedback] = useState('');
@@ -106,7 +108,11 @@ const Feedback = ({navigation}) => {
           style={{
             marginVertical: 20,
           }}>
-          <Text style={{fontSize: 18, color: 'gray'}}>
+          <Text
+            style={{
+              fontSize: 18,
+              color: colorScheme === 'dark' ? 'gray' : 'gray',
+            }}>
             Tell us what you love about the app,or what we could be doing
             better.
           </Text>
@@ -119,8 +125,12 @@ const Feedback = ({navigation}) => {
             flex: 1,
           }}>
           <TextInput
-            style={{fontSize: 18}}
+            style={{
+              fontSize: 16,
+              color: colorScheme === 'dark' ? 'black' : 'black',
+            }}
             placeholder="Enter Feedback"
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
             onChangeText={setFeedback}
             value={feedback}
           />
@@ -154,7 +164,12 @@ const Feedback = ({navigation}) => {
           ))}
         </View>
         <View style={{marginVertical: 25}}>
-          <Text style={{textAlign: 'center', fontSize: 15}}>
+          <Text
+            style={{
+              textAlign: 'center',
+              fontSize: 15,
+              color: colorScheme === 'dark' ? 'gray' : 'gray',
+            }}>
             Your word makes Anna Ka Dosa a better place.You are the influencer.
           </Text>
         </View>

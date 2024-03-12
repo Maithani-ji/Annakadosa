@@ -6,7 +6,7 @@ import {AppRegistry} from 'react-native';
 import App from './src/App';
 import {name as appName} from './app.json';
 import messaging from '@react-native-firebase/messaging';
-import NavigationService from './src/Navigation/NavigationService';
+import NavigationService from './src/nav/Navigation/NavigationService';
 import {getData, storeData} from './src/utils/AsyncStorag';
 // import {Appearance} from 'react-native';
 // // Enforce light mode (not recommended for production)

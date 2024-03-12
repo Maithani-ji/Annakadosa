@@ -9,6 +9,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import axios from 'axios';
@@ -19,6 +20,7 @@ import Snackbar from 'react-native-snackbar';
 import messaging from '@react-native-firebase/messaging';
 const SignIn = ({navigation}) => {
   const [deviceToken, setDeviceToken] = useState(null);
+  const colorScheme = useColorScheme();
   useEffect(() => {
     getDeviceToken();
   }, []);
@@ -154,6 +156,7 @@ const SignIn = ({navigation}) => {
                 value={number}
                 placeholder="Enter Phone Number"
                 keyboardType="number-pad"
+                placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
               />
             </View>
           </View>

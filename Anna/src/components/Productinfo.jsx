@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import {useWindowDimensions} from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -29,7 +30,7 @@ const Productinfo = ({navigation, route}) => {
   const [quantity, setQuantity] = useState(item?.quantity ? item.quantity : 1);
   //const [disable, setdisable] = useState(true);
   const [select, setselect] = useState(true);
-
+  const colorScheme = useColorScheme();
   const [showFullDescription, setShowFullDescription] = useState(true);
   if (item.averageRating < 1) {
     item.averageRating = 1;
@@ -127,7 +128,7 @@ const Productinfo = ({navigation, route}) => {
       console.log(response);
       // If the request is successful, navigate or perform other actions
       if (response && response.data) {
-        setLoad(false);
+        //setLoad(false);
         Snackbar.show({
           text: 'Added in Cart Successfully',
           textColor: 'white',
@@ -139,7 +140,7 @@ const Productinfo = ({navigation, route}) => {
 
         // You can navigate or perform any other action here
       } else {
-        setLoad(false);
+        // setLoad(false);
         // Alert.alert('Error', 'Error in adding product to cart');
         Snackbar.show({
           text: 'Failed in adding product to cart ',
@@ -151,7 +152,7 @@ const Productinfo = ({navigation, route}) => {
         console.error('Failed to add product to cart.');
       }
     } catch (error) {
-      setLoad(false);
+      //setLoad(false);
       Snackbar.show({
         text: 'Failed in adding product to cart ',
         textColor: 'white',
@@ -160,6 +161,8 @@ const Productinfo = ({navigation, route}) => {
         marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
       });
       console.error('Error adding product to cart:', error);
+    } finally {
+      setLoad(false);
     }
   };
 
@@ -177,8 +180,13 @@ const Productinfo = ({navigation, route}) => {
   if (load) {
     return <Loading />;
   }
+
   return (
-    <SafeAreaView style={{flex: 1, backgroundColor: 'white'}}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}>
       <View
         style={{backgroundColor: '#fed920', padding: 9, flexDirection: 'row'}}>
         <TouchableOpacity onPress={() => navigation.navigate('Main')}>
@@ -195,7 +203,7 @@ const Productinfo = ({navigation, route}) => {
             flex: 1,
             fontSize: 22,
             //sfontWeight: 'bold',
-            color: 'black',
+            color: colorScheme === 'dark' ? 'black' : 'black',
             marginLeft: 20,
             textAlignVertical: 'center',
           }}>
@@ -223,7 +231,8 @@ const Productinfo = ({navigation, route}) => {
             style={{
               fontSize: 20,
               fontWeight: 'bold',
-              color: 'black',
+              color: 'black', // Updated this line
+              //backgroundColor: 'white',
               marginBottom: 5,
             }}>
             {item.name}
@@ -286,7 +295,9 @@ const Productinfo = ({navigation, route}) => {
             />
           ))}
 
-          <Text>({item.totalReview}) reviews</Text>
+          <Text style={{color: colorScheme === 'dark' ? 'black' : 'black'}}>
+            ({item.totalReview}) reviews
+          </Text>
         </View>
 
         {/* <View

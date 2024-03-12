@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -19,8 +20,8 @@ import {getData, storeData} from '../../utils/AsyncStorag';
 import {useLogin} from '../../utils/LoginproviderContext';
 import Snackbar from 'react-native-snackbar';
 const Signup = ({navigation}) => {
-  const [selectedId, setSelectedId] = useState();
-  const [selectedGender, setSelectedGender] = useState('');
+  // const [selectedId, setSelectedId] = useState();
+  // const [selectedGender, setSelectedGender] = useState('');
   const [date, setdate] = useState(new Date());
   const [mode, setmode] = useState('');
   const [show, setshow] = useState(false);
@@ -29,6 +30,8 @@ const Signup = ({navigation}) => {
   const [email, setEmail] = useState('');
   const [load, setLoad] = useState(false);
   const {setIsLoggedin} = useLogin();
+  const colorScheme = useColorScheme();
+  const [selectedOption, setSelectedOption] = useState(null);
   const onchange = (event, selectedDate) => {
     setshow(false);
     const currentDate = selectedDate || date;
@@ -67,23 +70,29 @@ const Signup = ({navigation}) => {
   //   console.log('selectgender', selectedGender);
   // }, [selectedId]);
   const handleRegister = async () => {
-    setLoad(true);
-    const uid = await getData('uid');
     try {
+      setLoad(true);
+      const uid = await getData('uid');
+
       // Check if required data is available
-      if (fullname && email && selectedGender && datetext) {
+      if (fullname && email && selectedOption && datetext) {
         const userData = {
           user_id: uid,
           name: fullname,
           email: email,
-          gender: selectedGender,
+          gender: selectedOption,
           dob: datetext,
         };
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+          throw new Error('Enter correct Email format.');
+        }
 
         console.log('User Data:', userData);
 
         const response = await axios.post(
-          'https://newannakadosa.com/api/welcome/profile', // Replace with your actual API endpoint
+          'https://newannakadosa.com/api/welcome/profile',
           userData,
         );
 
@@ -95,7 +104,7 @@ const Signup = ({navigation}) => {
           textColor: 'white',
           backgroundColor: 'green',
           duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+          marginBottom: 70,
         });
 
         if (response.data.data.id) {
@@ -103,21 +112,66 @@ const Signup = ({navigation}) => {
         }
       } else {
         setLoad(false);
-        Snackbar.show({
-          text: 'Please fill in all the fields',
-          textColor: 'white',
-          backgroundColor: 'red',
-          duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
-        });
-        // navigation.replace('Address');
+        throw new Error('Please fill in all the fields');
       }
     } catch (error) {
       setLoad(false);
-      Alert.alert('Error', 'Failed to register. Please try again.');
-      //navigation.replace('Intro');
+      Snackbar.show({
+        text: error.message || 'Failed to register. Please try again.',
+        textColor: 'white',
+        backgroundColor: 'red',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70,
+      });
       console.error('API error:', error);
     }
+  };
+  const handleRadioPress = option => {
+    setSelectedOption(option);
+  };
+  const renderRadioButton = (option, label) => {
+    return (
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          marginTop: 5,
+          alignItems: 'center', // Align items vertically in the center
+        }}
+        onPress={() => handleRadioPress(option)}>
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 1.5,
+            borderColor: colorScheme === 'dark' ? 'green' : 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          {selectedOption === option && (
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 6,
+                backgroundColor: colorScheme === 'dark' ? 'green' : 'black',
+              }}
+            />
+          )}
+        </View>
+        <View style={{marginRight: 5, width: 50, height: 20}}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: selectedOption === option ? 'normal' : 'normal',
+              color: colorScheme === 'dark' ? 'black' : 'black',
+            }}>
+            {label}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   if (load) {
@@ -181,11 +235,13 @@ const Signup = ({navigation}) => {
             style={{
               fontSize: 18,
               borderBottomWidth: 1,
+              color: colorScheme === 'dark' ? 'black' : 'black',
               borderColor: 'lightgray',
             }}
             placeholder="Your full Name"
             onChangeText={setFullname}
             value={fullname}
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <View>
@@ -202,12 +258,14 @@ const Signup = ({navigation}) => {
             style={{
               fontSize: 18,
               borderBottomWidth: 1,
+              color: colorScheme === 'dark' ? 'black' : 'black',
               borderColor: 'lightgray',
             }}
             keyboardType="email-address"
             placeholder="Your Email Address"
             onChangeText={setEmail}
             value={email}
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <View>
@@ -222,23 +280,10 @@ const Signup = ({navigation}) => {
             Gender
           </Text>
           <View>
-            <RadioGroup
-              radioButtons={radioButtons}
-              color={'red'}
-              onPress={value => {
-                setSelectedId(value);
-                if (value == 1) {
-                  setSelectedGender('male');
-                } else if (value == 2) {
-                  setSelectedGender('female');
-                }
-              }}
-              selectedId={selectedId} // Use selected gender instead of selected id
-              containerStyle={{}}
-              descriptionStyle={{}}
-              labelStyle={{}}
-              layout="row"
-            />
+            <View style={{flexDirection: 'row', marginLeft: 10}}>
+              {renderRadioButton('male', 'Male')}
+              {renderRadioButton('female', 'Female')}
+            </View>
           </View>
         </View>
         <View>
@@ -267,6 +312,7 @@ const Signup = ({navigation}) => {
                 placeholder="DD-MM-YYYY"
                 editable={false}
                 value={datetext}
+                placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
               />
               <View style={{margin: 7}}>
                 <Image
@@ -292,7 +338,7 @@ const Signup = ({navigation}) => {
             style={{
               fontSize: 16,
               //fontWeight: 'bold',
-              //color: 'black',
+              color: colorScheme === 'dark' ? 'gray' : 'gray',
             }}>
             I agree to recieve promotional service.
           </Text>

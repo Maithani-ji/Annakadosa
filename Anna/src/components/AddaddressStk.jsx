@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
@@ -17,6 +18,7 @@ import {getData, storeData} from '../utils/AsyncStorag';
 import Snackbar from 'react-native-snackbar';
 
 const Addaddress = ({navigation, route}) => {
+  const colorScheme = useColorScheme();
   const [value, setValue] = useState(null);
   const {editable, editaddress} = route?.params;
   const [load, setload] = useState(false);
@@ -31,14 +33,14 @@ const Addaddress = ({navigation, route}) => {
   }, [editable, editaddress?.delivery_area_id]);
   const initialState = editaddress
     ? {
-        selectedId: editaddress.type === 'home' ? '1' : '2',
+        selectedOption: editaddress.type === 'home' ? 'home' : 'office',
         selectedtype: editaddress.type,
         address: editaddress.address,
         landmark: editaddress.landmark,
         //  deliveryid: editaddress.delivery_area_id,
       }
     : {
-        selectedId: null,
+        selectedOption: null,
         selectedtype: '',
         address: '',
         landmark: '',
@@ -50,7 +52,9 @@ const Addaddress = ({navigation, route}) => {
   const [address, setAddress] = useState(initialState.address);
   const [landmark, setLandmark] = useState(initialState.landmark);
   const [area, setareaData] = useState([]);
-
+  const [selectedOption, setSelectedOption] = useState(
+    initialState.selectedOption,
+  );
   console.log('deliveryid', deliveryid);
   useEffect(() => {
     getareadetails();
@@ -91,7 +95,7 @@ const Addaddress = ({navigation, route}) => {
     //console.log('address', address, selectedtype, landmark);
     setload(true);
     try {
-      if (deliveryid == null || !address || !landmark || !selectedtype) {
+      if (deliveryid == null || !address || !landmark || !selectedOption) {
         Alert.alert('Please fill all the fields ');
         setload(false);
         return;
@@ -104,7 +108,7 @@ const Addaddress = ({navigation, route}) => {
           delivery_area_id: deliveryid,
 
           address: address,
-          address_type: selectedtype,
+          address_type: selectedOption,
           landmark: landmark,
         },
       );
@@ -129,7 +133,7 @@ const Addaddress = ({navigation, route}) => {
         ),
       );
       await storeData('addressid', response?.data.data.id.toString());
-      navigation.replace('Address');
+      navigation.replace('Address', {cart: false});
     } catch (error) {
       setload(false);
       Snackbar.show({
@@ -154,7 +158,7 @@ const Addaddress = ({navigation, route}) => {
         first_name: 'null', // Modify this according to your requirements
         last_name: 'null', // Modify this according to your requirements
         address: address,
-        address_type: selectedtype,
+        address_type: selectedOption,
         landmark: landmark,
       };
       console.log('addressdata', addressData);
@@ -172,7 +176,7 @@ const Addaddress = ({navigation, route}) => {
         duration: Snackbar.LENGTH_SHORT,
         marginBottom: 70,
       });
-      navigation.replace('Address');
+      navigation.replace('Address', {cart: false});
     } catch (error) {
       setload(false);
       Snackbar.show({
@@ -212,7 +216,7 @@ const Addaddress = ({navigation, route}) => {
         await storeData('address', null);
         await storeData('addressid', null);
       }
-      navigation.replace('Address');
+      navigation.replace('Address', {cart: false});
       // Additional logic after successful deletion
     } catch (error) {
       setload(false);
@@ -232,6 +236,53 @@ const Addaddress = ({navigation, route}) => {
       // Handle errors, show an alert, log the error, etc.
       console.error('Error deleting address:', error);
     }
+  };
+  const handleRadioPress = option => {
+    setSelectedOption(option);
+  };
+  const renderRadioButton = (option, label) => {
+    return (
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          marginTop: 5,
+          alignItems: 'center', // Align items vertically in the center
+        }}
+        onPress={() => handleRadioPress(option)}>
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 1.5,
+            borderColor: colorScheme === 'dark' ? 'green' : 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          {selectedOption === option && (
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 6,
+                backgroundColor: colorScheme === 'dark' ? 'green' : 'black',
+              }}
+            />
+          )}
+        </View>
+        <View style={{marginRight: 5, width: 50, height: 20}}>
+          <Text
+            style={{
+              fontSize: 16,
+              fontWeight: selectedOption === option ? 'normal' : 'normal',
+              color: colorScheme === 'dark' ? 'black' : 'black',
+            }}>
+            {label}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
   const radioButtons = useMemo(
     () => [
@@ -304,8 +355,9 @@ const Addaddress = ({navigation, route}) => {
             borderColor: 'lightgray',
           }}>
           <Dropdown
+            mode="modal"
             style={{
-              // color: 'black',
+              color: 'black',
               paddingVertical: 5,
               // fontSize: 18,
               marginLeft: 4,
@@ -333,6 +385,15 @@ const Addaddress = ({navigation, route}) => {
               console.log('deliveryid', deliveryid);
             }} // Update the value in the state
             selectedTextStyle={{fontSize: 18, color: 'black'}}
+            inputSearchStyle={{color: 'black'}}
+            itemTextStyle={{color: 'black'}}
+            //containerStyle={{backgroundColor: 'white'}}
+            itemContainerStyle={
+              {
+                //backgroundColor: 'red',
+                //borderColor: 'green',
+              }
+            }
           />
         </View>
         <View>
@@ -348,11 +409,13 @@ const Addaddress = ({navigation, route}) => {
             style={{
               fontSize: 18,
               borderBottomWidth: 1,
+              color: colorScheme === 'dark' ? 'black' : 'black',
               borderColor: 'lightgray',
             }}
             placeholder="Door / Flat-no"
             value={address}
             onChangeText={setAddress}
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <View>
@@ -370,10 +433,12 @@ const Addaddress = ({navigation, route}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
+              color: colorScheme === 'dark' ? 'black' : 'black',
             }}
             placeholder="Landmark"
             value={landmark}
             onChangeText={setLandmark}
+            placeholderTextColor={colorScheme === 'dark' ? 'gray' : 'gray'}
           />
         </View>
         <View>
@@ -387,13 +452,12 @@ const Addaddress = ({navigation, route}) => {
             }}>
             Address Type
           </Text> */}
-          <View
-            style={{
-              marginTop: 10,
-              marginBottom: 10,
-              marginLeft: -10,
-            }}>
-            <RadioGroup
+          <View>
+            <View style={{flexDirection: 'row', marginTop: 5}}>
+              {renderRadioButton('office', 'Office')}
+              {renderRadioButton('home', 'Home')}
+            </View>
+            {/* <RadioGroup
               radioButtons={radioButtons}
               color={'red'}
               onPress={value => {
@@ -409,7 +473,7 @@ const Addaddress = ({navigation, route}) => {
               descriptionStyle={{}}
               labelStyle={{}}
               layout="row"
-            />
+            /> */}
           </View>
         </View>
         <TouchableOpacity

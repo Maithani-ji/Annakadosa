@@ -8,6 +8,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  useColorScheme,
 } from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
 import RadioGroup from 'react-native-radio-buttons-group';
@@ -45,11 +46,13 @@ const Profile = ({navigation}) => {
         setdatetext(userData.dob);
         seturl(userData.image);
         if (userData.gender == 'male') {
-          setSelectedId('1');
-          setSelectedGender('male');
+          // setSelectedId('1');
+          // setSelectedGender('male');
+          setSelectedOption('male');
         } else if (userData.gender == 'female') {
-          setSelectedId('2');
-          setSelectedGender('female');
+          // setSelectedId('2');
+          // setSelectedGender('female');
+          setSelectedOption('female');
         }
       }
       setLoad(false);
@@ -65,9 +68,11 @@ const Profile = ({navigation}) => {
       });
     }
   };
+  const colorScheme = useColorScheme();
+  const [selectedOption, setSelectedOption] = useState(null);
   const [user, setUserData] = useState(null);
-  const [selectedId, setSelectedId] = useState();
-  const [selectedGender, setSelectedGender] = useState('');
+  // const [selectedId, setSelectedId] = useState();
+  // const [selectedGender, setSelectedGender] = useState('');
   const [date, setdate] = useState(new Date());
   const [mode, setmode] = useState('');
   const [show, setshow] = useState(false);
@@ -110,54 +115,119 @@ const Profile = ({navigation}) => {
     [],
   );
   const handleRegister = async () => {
-    setLoad(true);
-    const id = await getData('id');
     try {
+      setLoad(true);
+
       // Check if required data is available
-      if (fullname || email || selectedGender || datetext) {
-        const user = {
-          user_id: id,
-          name: fullname,
-          email: email, // check from backend if there is any checking in email
-          gender: selectedGender,
-          dob: datetext,
-        };
-
-        // console.log('User Data:', user);
-
-        const response = await axios.post(
-          'https://newannakadosa.com/api/welcome/profile', // Replace with your actual API endpoint
-          user,
-        );
-
-        // console.log('API response:', response.data);
-
+      if (!(fullname && email && selectedOption && datetext)) {
         setLoad(false);
         Snackbar.show({
-          text: 'Profile Updated Successfully',
+          text: 'Please fill in all the fields.',
           textColor: 'white',
-          backgroundColor: 'green',
+          backgroundColor: 'red',
           duration: Snackbar.LENGTH_SHORT,
-          marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+          marginBottom: 70,
         });
-
-        //navigation.navigate('Main');
-        fetchData();
-      } else {
-        setLoad(false);
-        Alert.alert('Please fill in all the required fields');
+        return;
       }
+
+      const id = await getData('id');
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      if (!emailRegex.test(email)) {
+        setLoad(false);
+        Snackbar.show({
+          text: 'Enter correct Email format.',
+          textColor: 'white',
+          backgroundColor: 'red',
+          duration: Snackbar.LENGTH_SHORT,
+          marginBottom: 70,
+        });
+        return;
+      }
+
+      const user = {
+        user_id: id,
+        name: fullname,
+        email: email,
+        gender: selectedOption,
+        dob: datetext,
+      };
+
+      const response = await axios.post(
+        'https://newannakadosa.com/api/welcome/profile',
+        user,
+      );
+
+      setLoad(false);
+      Snackbar.show({
+        text: 'Profile Updated Successfully',
+        textColor: 'white',
+        backgroundColor: 'green',
+        duration: Snackbar.LENGTH_SHORT,
+        marginBottom: 70,
+      });
+
+      fetchData(); // Assuming fetchData is a function to fetch additional data after profile update
     } catch (error) {
       setLoad(false);
       Snackbar.show({
-        text: 'Failed to Update profile !',
+        text: 'Failed to Update profile!',
         textColor: 'white',
         backgroundColor: 'red',
         duration: Snackbar.LENGTH_SHORT,
-        marginBottom: 70, // Adjust this value to position the Snackbar at the desired distance from the top
+        marginBottom: 70,
       });
       console.error('API error:', error);
     }
+  };
+
+  const handleRadioPress = option => {
+    setSelectedOption(option);
+  };
+  const renderRadioButton = (option, label) => {
+    return (
+      <TouchableOpacity
+        style={{
+          flexDirection: 'row',
+          marginTop: 5,
+          alignItems: 'center', // Align items vertically in the center
+        }}
+        onPress={() => handleRadioPress(option)}>
+        <View
+          style={{
+            width: 20,
+            height: 20,
+            borderRadius: 10,
+            borderWidth: 1.5,
+            borderColor: colorScheme === 'dark' ? 'green' : 'black',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginRight: 10,
+          }}>
+          {selectedOption === option && (
+            <View
+              style={{
+                width: 10,
+                height: 10,
+                borderRadius: 6,
+                backgroundColor: colorScheme === 'dark' ? 'green' : 'black',
+              }}
+            />
+          )}
+        </View>
+        <View style={{marginRight: 5, width: 50, height: 20}}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: selectedOption === option ? 'normal' : 'normal',
+              color: colorScheme === 'dark' ? 'black' : 'black',
+            }}>
+            {label}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
 
   if (load) {
@@ -218,7 +288,7 @@ const Profile = ({navigation}) => {
           style={{
             fontSize: 25,
             fontWeight: 'bold',
-            color: 'black',
+            color: colorScheme === 'dark' ? 'black' : 'black',
             marginBottom: 5,
           }}>
           {user?.name}
@@ -237,7 +307,7 @@ const Profile = ({navigation}) => {
             style={{
               fontSize: 15,
               fontWeight: 'bold',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
               marginTop: 30,
             }}>
             Full Name
@@ -247,7 +317,7 @@ const Profile = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
             }}
             placeholder="Your full Name"
             onChangeText={setFullname}
@@ -259,7 +329,7 @@ const Profile = ({navigation}) => {
             style={{
               fontSize: 15,
               fontWeight: 'bold',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
               marginTop: 25,
             }}>
             Email Address
@@ -269,7 +339,7 @@ const Profile = ({navigation}) => {
               fontSize: 18,
               borderBottomWidth: 1,
               borderColor: 'lightgray',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
             }}
             keyboardType="email-address"
             placeholder="Your Email Address"
@@ -282,30 +352,15 @@ const Profile = ({navigation}) => {
             style={{
               fontSize: 15,
               fontWeight: 'bold',
-              //color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
               marginTop: 30,
               marginBottom: 10,
             }}>
             Gender
           </Text>
-          <View>
-            <RadioGroup
-              radioButtons={radioButtons}
-              color={'black'}
-              onPress={value => {
-                setSelectedId(value);
-                if (value == '1') {
-                  setSelectedGender('male');
-                } else if (value == '2') {
-                  setSelectedGender('female');
-                }
-              }}
-              selectedId={selectedId} // Use selected gender instead of selected id
-              containerStyle={{}}
-              descriptionStyle={{}}
-              labelStyle={{color: 'black'}}
-              layout="row"
-            />
+          <View style={{flexDirection: 'row', marginLeft: 10}}>
+            {renderRadioButton('male', 'Male')}
+            {renderRadioButton('female', 'Female')}
           </View>
         </View>
         <View>
@@ -313,7 +368,7 @@ const Profile = ({navigation}) => {
             style={{
               fontSize: 15,
               fontWeight: 'bold',
-              color: 'black',
+              color: colorScheme === 'dark' ? 'black' : 'black',
               marginTop: 20,
             }}>
             Date Of Birth
@@ -329,9 +384,12 @@ const Profile = ({navigation}) => {
               <TextInput
                 style={{
                   fontSize: 18,
-                  color: 'black',
+                  color: colorScheme === 'dark' ? 'black' : 'black',
                 }}
                 placeholder="DD-MM-YYYY"
+                placeholderTextColor={
+                  colorScheme === 'dark' ? 'black' : 'black'
+                }
                 editable={false}
                 value={datetext}
               />

@@ -35,11 +35,14 @@ const OrderStatus = ({navigation}) => {
           Order Status
         </Text>
       </View>
-      <ScrollView showsVerticalScrollIndicator={false} style={{margin: 20}}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        style={{marginHorizontal: 20}}>
         <View
           style={{
             borderBottomWidth: 0.8,
             borderColor: 'lightgray',
+            marginTop: 20,
           }}>
           <Text
             style={{
